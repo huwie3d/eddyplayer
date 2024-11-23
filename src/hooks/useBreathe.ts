@@ -19,17 +19,17 @@ const useBreathe = ({
   useEffect(() => {
     const timer = setInterval(() => {
       setValue((prevValue) => {
-        const change = Math.random() * 2; // Random change between 0 and 2
+        const change = Math.random(); // Random change between 0 and 2
         let newValue: number;
 
         if (direction === 'in') {
-          newValue = prevValue + change;
+          newValue = prevValue + change / 20;
           if (newValue >= maxValue) {
             setDirection('out');
             return maxValue;
           }
         } else {
-          newValue = prevValue - change;
+          newValue = prevValue - change / 20;
           if (newValue <= minValue) {
             setDirection('in');
             return minValue;

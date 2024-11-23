@@ -33,22 +33,22 @@ function App() {
   const { colors } = useAlbumColors(nowPlaying?.albumArt || '');
 
   const breatheTR = useBreathe({
-    initialValue: 50,
-    interval: 83,
-    maxValue: 60,
-    minValue: 40,
+    initialValue: 90,
+    interval: 83000,
+    maxValue: 90,
+    minValue: 90,
   });
 
   const breatheBR = useBreathe({
     initialValue: 20,
-    interval: 90,
+    interval: 900,
     maxValue: 40,
     minValue: 20,
   });
 
   const breatheBL = useBreathe({
     initialValue: 20,
-    interval: 90,
+    interval: 600,
     maxValue: 70,
     minValue: 20,
   });
@@ -121,7 +121,9 @@ function App() {
           backgroundImage: `
           radial-gradient(at 40% 20%, ${primaryColor} 0px, transparent 50%),
 radial-gradient(at 80% 0%, color-mix(in srgb,${secondaryColor}, ${primaryColor} ${breatheTR}%) 0px, transparent 50%),
-radial-gradient(at 0% 50%, ${tertiaryColor} 0px, transparent 50%),
+radial-gradient(at 0% ${breatheBL / 10 + 50}%, ${tertiaryColor}${
+            Math.round(breatheTR) + 30
+          } 0px, transparent 50%),
 radial-gradient(at 80% 50%, ${primaryColor} 0px, transparent 50%),
 radial-gradient(at 0% 100%, color-mix(in srgb,${quinaryColor}, ${tertiaryColor} ${breatheBL}%) 0px, transparent 50%),
 radial-gradient(at 80% 100%, color-mix(in srgb,${quaternaryColor}, ${primaryColor} ${breatheBR}%)  0px, transparent 50%),

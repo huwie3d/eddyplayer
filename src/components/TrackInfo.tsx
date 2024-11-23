@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScrollingText } from './scrollText';
 
 interface TrackInfoProps {
   title: string;
@@ -19,7 +20,7 @@ export function TrackInfo({
 }: TrackInfoProps) {
   return (
     <div className="">
-      <h1 className="text-3xl font-bold truncate">{title}</h1>
+      <ScrollingText text={title} className="text-3xl font-bold truncate max-w-xs" />
       <div className="flex text-xl items-center text-neutral-300 gap-3">
         {artistArt && (
           <img
@@ -30,7 +31,7 @@ export function TrackInfo({
         )}
         {artists.map((a) => a.name).join(', ')}
       </div>
-      <p className="text-xl text-neutral-300">{albumTitle}</p>
+      <ScrollingText text={albumTitle} className="text-xl truncate text-neutral-300 max-w-xs" />
     </div>
   );
 }
