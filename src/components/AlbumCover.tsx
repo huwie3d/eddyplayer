@@ -12,13 +12,13 @@ export function AlbumCover({ albumArt, albumTitle, artistArt }: AlbumCoverProps)
       <img
         src={albumArt}
         alt={albumTitle}
-        className="w-72 h-72 min-w-72 rounded-lg shadow-2xl"
+        className="w-72 h-72 min-w-72 rounded-lg shadow-2xl border border-neutral-500/30"
       />
               {artistArt && (
           <img
             src={artistArt}
             alt="Artist image"
-            className="absolute opacity-80 border border-neutral-500/80 bottom-2 right-2 h-16 w-16 rounded-full shadow-lg"
+            className="absolute opacity-80 border border-neutral-500/50 bottom-2 right-2 h-16 w-16 rounded-full shadow-lg"
           />
         )}
     </div>

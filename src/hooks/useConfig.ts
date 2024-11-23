@@ -26,7 +26,8 @@ export function useConfig() {
   }, [config]);
 
   const updateConfig = (apiUrl: string, apiKey: string) => {
-    setConfig({ apiUrl, apiKey });
+    // remove trailing slash from api url
+    setConfig({ apiUrl: apiUrl.replace(/\/+$/, ''), apiKey });
   };
 
   return { config, isConfigured, updateConfig };
