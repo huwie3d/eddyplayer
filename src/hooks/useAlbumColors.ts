@@ -89,7 +89,7 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
         const newColors: RGB[] = [];
 
         // Try to get colors in priority order
-        const swatchTypes = ['Muted', 'Vibrant', 'DarkVibrant', 'DarkMuted', 'LightVibrant'];
+        const swatchTypes = ['Vibrant', 'Muted', 'DarkVibrant', 'DarkMuted', 'LightVibrant'];
         
         for (const swatchType of swatchTypes) {
           const swatch = palette[swatchType];
