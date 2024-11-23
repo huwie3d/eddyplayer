@@ -43,7 +43,15 @@ export function ConfigMenu({ onSave, currentApiUrl, currentApiKey }: ConfigMenuP
               <X className="w-5 h-5" />
             </button>
             
-            <h2 className="text-xl font-bold text-white mb-6">Configuration</h2>
+            <h2 className="text-xl font-bold text-white mb-3">Configuration</h2>
+
+            <div className="mb-1 -mr-2">
+            When eddyPlayer is served over HTTPS, connecting to a local eddyAPI instance may need a TLS proxy to work.
+            </div>
+
+            <div className="mb-3 -mr-2">
+            You can use <a className="text-blue-400" href="https://try.cloudflare.com/">TryCloudflare</a> for this.
+            </div>
             
             <div className="space-y-4">
               <div>
