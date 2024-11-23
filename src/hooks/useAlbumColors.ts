@@ -79,7 +79,7 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
           img.onerror = reject;
         });
 
-        const colorThief = new ColorThief();i
+        const colorThief = new ColorThief();
         const palette = await colorThief.getPalette(img, 5);
         const newColors: RGB[] = palette.map((color) => hexToRgb(color));
 
