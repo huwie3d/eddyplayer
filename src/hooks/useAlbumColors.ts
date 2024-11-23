@@ -79,7 +79,7 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
         
         // Create a new Vibrant instance with quality and samples options
         const v = new Vibrant(img, {
-          quality: 2,
+          quality: 1,
           colorCount: 64
         })
 
