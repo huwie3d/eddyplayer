@@ -1,107 +1,106 @@
-// You can use this as a component or integrate the styles directly
-const MeshBg = ({ 
-    colors, 
-    breatheBL = 50,
-    breatheBR = 50,
-    breatheTR = 50,
-    className = ""
-  }) => {
-    const [vibrant, muted, darkVibrant, darkMuted, lightVibrant] = colors;
-    
-    return (
-      <div
-        className={`absolute inset-0 transition-opacity duration-1000 ${className}`}
-        style={{
-          backgroundColor: vibrant,
-          backgroundImage: `
-            /* Main top-left bloom */
-            radial-gradient(circle at 25% 25%, ${vibrant} 0px, transparent 50%),
-            
-            /* Top-right accent */
-            radial-gradient(
-              circle at 85% 15%, 
-              color-mix(in srgb, ${muted} ${breatheTR}%, ${vibrant}) 0px, 
-              transparent 45%
-            ),
-            
-            /* Mid-left accent */
-            radial-gradient(
-              ellipse at 0% ${breatheBL / 10 + 50}%, 
-              ${darkVibrant}cc 0px, 
-              transparent 20%
-            ),
-            
-            /* Center accent */
-            radial-gradient(
-              circle at 50% 50%, 
-              color-mix(in srgb, ${lightVibrant} 30%, ${vibrant}) 0px, 
-              transparent 55%
-            ),
-            
-            /* Bottom-left sweep */
-            radial-gradient(
-              ellipse at 15% 85%, 
-              color-mix(in srgb, ${darkMuted} ${breatheBL}%, ${darkVibrant}) 0px, 
-              transparent 70%
-            ),
-            
-            /* Bottom-right accent */
-            radial-gradient(
-              circle at 80% 80%, 
-              color-mix(in srgb, ${lightVibrant} ${breatheBR}%, ${vibrant}) 0px, 
-              transparent 65%
-            ),
+'use client'
 
-            /* top-left accent */
-            radial-gradient(
-              circle at 30% 60%, 
-              color-mix(in srgb, ${lightVibrant} ${breatheBR}%, ${muted}) 0px, 
-              transparent 65%
-            ),
-            
-            /* Subtle top accent */
-            radial-gradient(
-              ellipse at 50% 0%, 
-              color-mix(in srgb, ${muted} 20%, ${vibrant}) 0px, 
-              transparent 40%
-            ),
-            
-            /* Left edge glow */
-            radial-gradient(
-              ellipse at 0% 50%, 
-              color-mix(in srgb, ${darkVibrant} 40%, ${vibrant}) 0px, 
-              transparent 45%
-            ),
-            
-            /* Bottom glow */
-            radial-gradient(
-              ellipse at 50% 100%, 
-              color-mix(in srgb, ${darkMuted} 30%, ${vibrant}) 0px, 
-              transparent 50%
-            )
-          `
-        }}
-      />
-    );
-  };
-  
-  export default MeshBg;
-  
-  // Example usage:
-  /*
-  function AlbumArtwork({ imageUrl }) {
-    const { colors, isTransitioning } = useAlbumColors(imageUrl);
-    
-    return (
-      <div className="relative w-full h-full">
-        <MeshBg 
-          colors={colors}
-          breatheBL={50 + Math.sin(Date.now() / 1000) * 25}
-          breatheBR={50 + Math.cos(Date.now() / 1000) * 25}
-          breatheTR={50 + Math.sin(Date.now() / 1200) * 25}
-        />
-        <img src={imageUrl} alt="Album artwork" className="relative z-10" />
-      </div>
-    );
-  }
-  */
+import React, { useState, useEffect } from 'react'
+
+const MeshBg = ({ 
+  colors, 
+  className = ""
+}) => {
+  const [vibrant, muted, darkVibrant, darkMuted, lightVibrant] = colors
+  const [breatheBL, setBreatheBL] = useState(50)
+  const [breatheBR, setBreatheBR] = useState(50)
+  const [breatheTR, setBreatheTR] = useState(50)
+  const [positions, setPositions] = useState({
+    topLeft: { x: 25, y: 25 },
+    topRight: { x: 85, y: 15 },
+    bottomLeft: { x: 45, y: 95 },
+    bottomRight: { x: 80, y: 80 },
+    center: { x: 50, y: 50 },
+  })
+
+  useEffect(() => {
+    const animateBreathe = () => {
+      const time = Date.now() / 1000
+      setBreatheBL(50 + Math.sin(time) * 25)
+      setBreatheBR(50 + Math.cos(time) * 25)
+      setBreatheTR(50 + Math.sin(time / 1.2) * 25)
+    }
+
+    // const moveSpots = () => {
+    //   setPositions({
+    //     topLeft: { x: 20 + Math.random() * 10, y: 20 + Math.random() * 10 },
+    //     topRight: { x: 80 + Math.random() * 10, y: 10 + Math.random() * 10 },
+    //     bottomLeft: { x: 10 + Math.random() * 10, y: 80 + Math.random() * 10 },
+    //     bottomRight: { x: 75 + Math.random() * 10, y: 75 + Math.random() * 10 },
+    //     center: { x: 45 + Math.random() * 10, y: 45 + Math.random() * 10 },
+    //   })
+    // }
+
+    const breatheIntervalId = setInterval(animateBreathe, 50) // Update every 50ms for smooth animation
+    //const moveIntervalId = setInterval(moveSpots, 5000) // Move spots every 5 seconds
+
+    return () => {
+      clearInterval(breatheIntervalId)
+      //clearInterval(moveIntervalId)
+    } // Cleanup on unmount
+  }, [])
+
+  return (
+    <div
+      className={`absolute inset-0 transition-all duration-5000 ease-in-out ${className}`}
+      style={{
+        backgroundColor: vibrant,
+        backgroundImage: `
+          radial-gradient(circle at ${positions.topLeft.x}% ${positions.topLeft.y}%, ${vibrant} 0px, transparent 50%),
+          radial-gradient(
+            circle at ${positions.topRight.x}% ${positions.topRight.y}%, 
+            color-mix(in srgb, ${muted} ${breatheTR}%, ${vibrant}) 0px, 
+            transparent 45%
+          ),
+          radial-gradient(
+            ellipse at 0% ${breatheBL / 10 + 50}%, 
+            ${darkVibrant}cc 0px, 
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at ${positions.center.x}% ${positions.center.y}%, 
+            color-mix(in srgb, ${lightVibrant} 30%, ${vibrant}) 0px, 
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse at ${positions.bottomLeft.x}% ${positions.bottomLeft.y}%, 
+            color-mix(in srgb, ${darkMuted} ${breatheBL}%, ${darkVibrant}) 10px, 
+            transparent 70%
+          ),
+          radial-gradient(
+            circle at ${positions.bottomRight.x}% ${positions.bottomRight.y}%, 
+            color-mix(in srgb, ${lightVibrant} ${breatheBR}%, ${vibrant}) 0px, 
+            transparent 65%
+          ),
+          radial-gradient(
+            circle at 30% 60%, 
+            color-mix(in srgb, ${lightVibrant} ${breatheBR}%, ${muted}) 0px, 
+            transparent 65%
+          ),
+          radial-gradient(
+            ellipse at 50% 0%, 
+            color-mix(in srgb, ${muted} 20%, ${vibrant}) 0px, 
+            transparent 40%
+          ),
+          radial-gradient(
+            ellipse at 0% 50%, 
+            color-mix(in srgb, ${darkVibrant} 40%, ${vibrant}) 0px, 
+            transparent 45%
+          ),
+          radial-gradient(
+            ellipse at 50% 100%, 
+            color-mix(in srgb, ${darkMuted} 30%, ${vibrant}) 0px, 
+            transparent 50%
+          )
+        `
+      }}
+    />
+  )
+}
+
+export default MeshBg

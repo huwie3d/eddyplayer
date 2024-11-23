@@ -33,27 +33,6 @@ function App() {
   const { config, isConfigured, updateConfig } = useConfig();
   const { colors } = useAlbumColors(nowPlaying?.albumArt || '');
 
-  const breatheTR = useBreathe({
-    initialValue: 90,
-    interval: 83000,
-    maxValue: 90,
-    minValue: 90,
-  });
-
-  const breatheBR = useBreathe({
-    initialValue: 20,
-    interval: 900,
-    maxValue: 40,
-    minValue: 20,
-  });
-
-  const breatheBL = useBreathe({
-    initialValue: 20,
-    interval: 600,
-    maxValue: 70,
-    minValue: 20,
-  });
-
   useEffect(() => {
     if (!isConfigured) return;
 
@@ -136,9 +115,6 @@ radial-gradient(at 0% 0%, ${primaryColor} 0px, transparent 50%)`,
       /> */}
       <MeshBg 
           colors={colors}
-          breatheBL={breatheBL}
-          breatheBR={breatheBR}
-          breatheTR={breatheTR}
         />
 
       {/* Soft blur overlay */}
