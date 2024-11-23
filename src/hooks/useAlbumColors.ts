@@ -83,12 +83,15 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
         const palette = await colorThief.getPalette(img, 5);
         const newColors: RGB[] = palette.map((color) => hexToRgb(color));
 
-        shuffleArray(newColors)
-
+        const [firstColor, ...restColors] = newColors;
+        shuffleArray(restColors);
+        
+        const shuffledColors = [firstColor, ...restColors];
+        
         // Start transition to new colors
         setColorState((prev) => ({
           ...prev,
-          target: newColors,
+          target: shuffledColors,
           transitioning: true,
         }));
       } catch (error) {
