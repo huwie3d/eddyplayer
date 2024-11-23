@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import ColorThief from 'color-thief-ts';
+import Vibrant from 'node-vibrant';
 
 type RGB = [number, number, number];
 type ColorState = {
@@ -7,6 +7,13 @@ type ColorState = {
   target: RGB[];
   transitioning: boolean;
 };
+
+function rgbToHex([r, g, b]: RGB): string {
+  return (
+    '#' +
+    [r, g, b].map((x) => Math.round(x).toString(16).padStart(2, '0')).join('')
+  );
+}
 
 function hexToRgb(hex: string): RGB {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -18,13 +25,6 @@ function hexToRgb(hex: string): RGB {
   ];
 }
 
-function rgbToHex([r, g, b]: RGB): string {
-  return (
-    '#' +
-    [r, g, b].map((x) => Math.round(x).toString(16).padStart(2, '0')).join('')
-  );
-}
-
 function interpolateColor(color1: RGB, color2: RGB, progress: number): RGB {
   return [
     color1[0] + (color2[0] - color1[0]) * progress,
@@ -33,27 +33,25 @@ function interpolateColor(color1: RGB, color2: RGB, progress: number): RGB {
   ];
 }
 
-function easeInOut(t) {
+function easeInOut(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
-function shuffleArray(array) {
-  for (var i = array.length - 1; i >= 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
+function shuffleArray(array: any[]): void {
+  for (let i = array.length - 1; i >= 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
 export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
   const defaultColors: RGB[] = [
     [26, 26, 26], // #1a1a1a
-    [0, 0, 0], // #000000
+    [0, 0, 0],    // #000000
     [51, 51, 51], // #333333
     [26, 26, 26], // #1a1a1a
-    [0, 0, 0], // #000000
+    [0, 0, 0],    // #000000
   ];
 
   const [colorState, setColorState] = useState<ColorState>({
@@ -78,12 +76,39 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
           img.onload = resolve;
           img.onerror = reject;
         });
+        
+        // Create a new Vibrant instance with quality and samples options
+        const v = new Vibrant(img, {
+          quality: 1,
+          colorCount: 5
+        })
 
-        const colorThief = new ColorThief();
-        const palette = await colorThief.getPalette(img, 5);
-        const newColors: RGB[] = palette.map((color) => hexToRgb(color));
+        const palette = await v.getPalette()
+        
+        // Convert Vibrant swatches to RGB arrays and ensure we have valid colors
+        const newColors: RGB[] = [];
 
-        // split first colour off so we don't shuffle it
+        // Try to get colors in priority order
+        const swatchTypes = ['Muted', 'Vibrant', 'DarkVibrant', 'DarkMuted', 'LightVibrant'];
+        
+        for (const swatchType of swatchTypes) {
+          const swatch = palette[swatchType];
+          if (swatch && swatch.getRgb) {
+            const rgb = swatch.getRgb();
+            newColors.push([
+              Math.round(rgb[0]),
+              Math.round(rgb[1]),
+              Math.round(rgb[2])
+            ]);
+          }
+        }
+
+        // If we don't have enough colors, pad with random
+        while (newColors.length < 5) {
+          newColors.push(defaultColors[Math.floor(Math.random() * newColors.length)]);
+        }
+
+        // Split first color off so we don't shuffle it
         const [firstColor, ...restColors] = newColors;
         shuffleArray(restColors);
         
@@ -97,10 +122,23 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
         }));
       } catch (error) {
         console.error('Failed to extract colors:', error);
+        // On error, ensure we still have valid colors by using defaults
+        setColorState((prev) => ({
+          ...prev,
+          target: defaultColors,
+          transitioning: true,
+        }));
       }
     };
 
     loadColors();
+
+    // Cleanup
+    return () => {
+      if (animationFrame.current) {
+        cancelAnimationFrame(animationFrame.current);
+      }
+    };
   }, [imageUrl]);
 
   // Handle the animation
@@ -144,7 +182,6 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
 
   // Convert current colors to hex for consuming components
   const colors = colorState.current.map(rgbToHex);
-
 
   return { colors, isTransitioning: colorState.transitioning };
 }
