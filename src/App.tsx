@@ -6,6 +6,7 @@ import { ConfigMenu } from './components/ConfigMenu';
 import { useConfig } from './hooks/useConfig';
 import { useAlbumColors } from './hooks/useAlbumColors';
 import useBreathe from './hooks/useBreathe';
+import MeshBg from './components/MeshBg';
 
 interface NowPlayingResponse {
   item: {
@@ -108,18 +109,18 @@ function App() {
     );
   }
 
-  const [
-    primaryColor,
-    secondaryColor,
-    tertiaryColor,
-    quaternaryColor,
-    quinaryColor,
-  ] = colors;
+  // const [
+  //   primaryColor,
+  //   secondaryColor,
+  //   tertiaryColor,
+  //   quaternaryColor,
+  //   quinaryColor,
+  // ] = colors;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 transition-all duration-1000 relative overflow-hidden">
       {/* Base gradient layer */}
-      <div
+      {/* <div
         className="absolute inset-0 transition-opacity duration-1000"
         style={{
           backgroundColor: `${primaryColor}`,
@@ -132,7 +133,13 @@ radial-gradient(at 0% 100%, color-mix(in srgb,${quinaryColor}, ${tertiaryColor} 
 radial-gradient(at 80% 100%, color-mix(in srgb,${quaternaryColor}, ${primaryColor} ${breatheBR}%)  0px, transparent 50%),
 radial-gradient(at 0% 0%, ${primaryColor} 0px, transparent 50%)`,
         }}
-      />
+      /> */}
+      <MeshBg 
+          colors={colors}
+          breatheBL={breatheBL}
+          breatheBR={breatheBR}
+          breatheTR={breatheTR}
+        />
 
       {/* Soft blur overlay */}
       <div className="absolute inset-0 backdrop-blur-3xl opacity-30" />

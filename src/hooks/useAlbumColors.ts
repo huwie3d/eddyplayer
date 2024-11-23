@@ -108,16 +108,16 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
           newColors.push(defaultColors[Math.floor(Math.random() * newColors.length)]);
         }
 
-        // Split first color off so we don't shuffle it
-        const [firstColor, ...restColors] = newColors;
-        shuffleArray(restColors);
+        // // Split first color off so we don't shuffle it
+        // const [firstColor, ...restColors] = newColors;
+        // shuffleArray(restColors);
         
-        const shuffledColors = [firstColor, ...restColors];
+        // const shuffledColors = [firstColor, ...restColors];
         
         // Start transition to new colors
         setColorState((prev) => ({
           ...prev,
-          target: shuffledColors,
+          target: newColors, //shuffledColors,
           transitioning: true,
         }));
       } catch (error) {
