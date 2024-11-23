@@ -148,13 +148,13 @@ radial-gradient(at 0% 0%, ${primaryColor} 0px, transparent 50%)`,
           <AlbumCover
             albumArt={nowPlaying.albumArt}
             albumTitle={nowPlaying.item.album.title}
+            artistArt={nowPlaying.artistArt}
           />
           <div className="flex-1 flex flex-col text-white space-y-6 h-40">
             <div className="flex flex-col flex-1 h-full min-h-full items-left justify-center">
             <TrackInfo
               title={nowPlaying.item.title}
               artists={nowPlaying.item.artists}
-              artistArt={nowPlaying.artistArt}
               albumTitle={nowPlaying.item.album.title}
             />
             </div>

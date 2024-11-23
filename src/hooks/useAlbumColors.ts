@@ -37,6 +37,16 @@ function easeInOut(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
+/* Randomize array in-place using Durstenfeld shuffle algorithm */
+function shuffleArray(array) {
+  for (var i = array.length - 1; i >= 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+  }
+}
+
 export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
   const defaultColors: RGB[] = [
     [26, 26, 26], // #1a1a1a
@@ -69,9 +79,11 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
           img.onerror = reject;
         });
 
-        const colorThief = new ColorThief();
+        const colorThief = new ColorThief();i
         const palette = await colorThief.getPalette(img, 5);
         const newColors: RGB[] = palette.map((color) => hexToRgb(color));
+
+        shuffleArray(newColors)
 
         // Start transition to new colors
         setColorState((prev) => ({
