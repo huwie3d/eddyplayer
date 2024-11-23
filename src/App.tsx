@@ -80,7 +80,7 @@ function App() {
       <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black flex items-center justify-center p-4">
         <div className="bg-black/30 backdrop-blur-xl rounded-xl p-8 shadow-2xl max-w-md w-full">
           <h1 className="text-2xl font-bold text-white mb-6">
-            Welcome to Now Playing
+            Get started with EddyPlayer
           </h1>
           <p className="text-white/70 mb-8">
             Please configure your API settings to continue.
@@ -99,6 +99,11 @@ function App() {
     return (
       <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black flex items-center justify-center">
         <div className="animate-pulse text-white text-xl">Loading...</div>
+        <ConfigMenu
+            onSave={updateConfig}
+            currentApiUrl={config.apiUrl}
+            currentApiKey={config.apiKey}
+          />
       </div>
     );
   }
@@ -138,19 +143,21 @@ radial-gradient(at 0% 0%, ${primaryColor} 0px, transparent 50%)`,
         currentApiKey={config.apiKey}
       />
 
-      <div className="w-full max-w-2xl bg-black/30 backdrop-blur-xl rounded-xl p-8 shadow-2xl relative z-10">
+      <div className="md:w-full md:max-w-3xl bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10">
         <div className="flex flex-col md:flex-row min-w-full gap-8 items-center">
           <AlbumCover
             albumArt={nowPlaying.albumArt}
             albumTitle={nowPlaying.item.album.title}
           />
-          <div className="flex-1 text-white space-y-6">
+          <div className="flex-1 flex flex-col text-white space-y-6 h-40">
+            <div className="flex flex-col flex-1 h-full min-h-full items-left justify-center">
             <TrackInfo
               title={nowPlaying.item.title}
               artists={nowPlaying.item.artists}
               artistArt={nowPlaying.artistArt}
               albumTitle={nowPlaying.item.album.title}
             />
+            </div>
             <ProgressBar
               progress={(nowPlaying.position / nowPlaying.item.duration) * 100}
               position={nowPlaying.position}

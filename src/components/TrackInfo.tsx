@@ -22,8 +22,8 @@ export function TrackInfo({
     document.title = "Eddy - " + title;
     }, [title]);
   return (
-    <div className="">
-      <ScrollingText text={title} className="text-3xl font-bold truncate max-w-xs" />
+    <div className="md:mb-4">
+      <ScrollingText text={title} className="text-3xl font-bold truncate w-full max-w-xs md:max-w-sm" />
       <div className="flex text-xl items-center text-neutral-300 gap-3">
         {artistArt && (
           <img
@@ -34,7 +34,7 @@ export function TrackInfo({
         )}
         {artists.map((a) => a.name).join(', ')}
       </div>
-      <ScrollingText text={albumTitle} className="text-xl truncate text-neutral-300 max-w-xs" />
+      <ScrollingText text={albumTitle} className="text-xl truncate text-neutral-300 max-w-xs md:max-w-sm" />
     </div>
   );
 }
