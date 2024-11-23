@@ -121,9 +121,7 @@ function App() {
           backgroundImage: `
           radial-gradient(at 40% 20%, ${primaryColor} 0px, transparent 50%),
 radial-gradient(at 80% 0%, color-mix(in srgb,${secondaryColor}, ${primaryColor} ${breatheTR}%) 0px, transparent 50%),
-radial-gradient(at 0% ${breatheBL / 10 + 50}%, ${tertiaryColor}${
-            Math.round(breatheTR) + 30
-          } 0px, transparent 50%),
+radial-gradient(at 0% ${breatheBL / 10 + 50}%, ${tertiaryColor}aa 0px, transparent 50%),
 radial-gradient(at 80% 50%, ${primaryColor} 0px, transparent 50%),
 radial-gradient(at 0% 100%, color-mix(in srgb,${quinaryColor}, ${tertiaryColor} ${breatheBL}%) 0px, transparent 50%),
 radial-gradient(at 80% 100%, color-mix(in srgb,${quaternaryColor}, ${primaryColor} ${breatheBR}%)  0px, transparent 50%),
