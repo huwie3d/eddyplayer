@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollingText } from './scrollText';
 
 interface TrackInfoProps {
@@ -18,6 +18,9 @@ export function TrackInfo({
   artistArt,
   albumTitle,
 }: TrackInfoProps) {
+  useEffect(() => {
+    document.title = "Eddy - " + title;
+    }, [title]);
   return (
     <div className="">
       <ScrollingText text={title} className="text-3xl font-bold truncate max-w-xs" />
