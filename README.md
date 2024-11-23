@@ -1,3 +1,3 @@
 # eddyplayer
 
-[Edit in StackBlitz next generation editor ⚡️](https://stackblitz.com/~/github.com/espeon/eddyplayer)
+viewer for [eddyAPI](https://github.com/espeon/neptune-plugins)
