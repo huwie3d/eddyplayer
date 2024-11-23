@@ -116,8 +116,6 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
         interpolateColor(currentColor, colorState.target[i], progress)
       );
 
-      console.log('interpolatedCOlors', interpolatedColors);
-
       setColorState((prev) => ({
         ...prev,
         current: interpolatedColors,
@@ -143,7 +141,6 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
   // Convert current colors to hex for consuming components
   const colors = colorState.current.map(rgbToHex);
 
-  //console.log(colorState.current, colors)
 
   return { colors, isTransitioning: colorState.transitioning };
 }
