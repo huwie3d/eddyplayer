@@ -3,10 +3,11 @@ import { AlbumCover } from './components/AlbumCover';
 import { TrackInfo } from './components/TrackInfo';
 import { ProgressBar } from './components/ProgressBar';
 import { ConfigMenu } from './components/ConfigMenu';
+import { Lyrics } from './components/Lyrics';
 import { useConfig } from './hooks/useConfig';
 import { useAlbumColors } from './hooks/useAlbumColors';
-import useBreathe from './hooks/useBreathe';
 import MeshBg from './components/MeshBg';
+import { LyricsToggle } from './components/LyricsToggle';
 
 interface NowPlayingResponse {
   item: {
@@ -30,6 +31,7 @@ interface NowPlayingResponse {
 
 function App() {
   const [nowPlaying, setNowPlaying] = useState<NowPlayingResponse | null>(null);
+  const [showLyrics, setShowLyrics] = useState(false);
   const { config, isConfigured, updateConfig } = useConfig();
   const { colors } = useAlbumColors(nowPlaying?.albumArt || '');
 
@@ -80,44 +82,17 @@ function App() {
       <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black flex items-center justify-center">
         <div className="animate-pulse text-white text-xl">Loading...</div>
         <ConfigMenu
-            onSave={updateConfig}
-            currentApiUrl={config.apiUrl}
-            currentApiKey={config.apiKey}
-          />
+          onSave={updateConfig}
+          currentApiUrl={config.apiUrl}
+          currentApiKey={config.apiKey}
+        />
       </div>
     );
   }
 
-  // const [
-  //   primaryColor,
-  //   secondaryColor,
-  //   tertiaryColor,
-  //   quaternaryColor,
-  //   quinaryColor,
-  // ] = colors;
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4 transition-all duration-1000 relative overflow-hidden">
-      {/* Base gradient layer */}
-      {/* <div
-        className="absolute inset-0 transition-opacity duration-1000"
-        style={{
-          backgroundColor: `${primaryColor}`,
-          backgroundImage: `
-          radial-gradient(at 40% 20%, ${primaryColor} 0px, transparent 50%),
-radial-gradient(at 80% 0%, color-mix(in srgb,${secondaryColor}, ${primaryColor} ${breatheTR}%) 0px, transparent 50%),
-radial-gradient(at 0% ${breatheBL / 10 + 50}%, ${tertiaryColor}aa 0px, transparent 50%),
-radial-gradient(at 80% 50%, ${primaryColor} 0px, transparent 50%),
-radial-gradient(at 0% 100%, color-mix(in srgb,${quinaryColor}, ${tertiaryColor} ${breatheBL}%) 0px, transparent 50%),
-radial-gradient(at 80% 100%, color-mix(in srgb,${quaternaryColor}, ${primaryColor} ${breatheBR}%)  0px, transparent 50%),
-radial-gradient(at 0% 0%, ${primaryColor} 0px, transparent 50%)`,
-        }}
-      /> */}
-      <MeshBg 
-          colors={colors}
-        />
-
-      {/* Soft blur overlay */}
+      <MeshBg colors={colors} />
       <div className="absolute inset-0 backdrop-blur-3xl opacity-30" />
 
       <ConfigMenu
@@ -126,27 +101,44 @@ radial-gradient(at 0% 0%, ${primaryColor} 0px, transparent 50%)`,
         currentApiKey={config.apiKey}
       />
 
-      <div className="md:w-full md:max-w-3xl bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10">
-        <div className="flex flex-col md:flex-row min-w-full gap-8 items-center">
-          <AlbumCover
-            albumArt={nowPlaying.albumArt}
-            albumTitle={nowPlaying.item.album.title}
-            artistArt={nowPlaying.artistArt}
-          />
-          <div className="flex-1 flex flex-col text-white space-y-6 h-40">
-            <div className="flex flex-col flex-1 h-full min-h-full items-left justify-center">
-            <TrackInfo
-              title={nowPlaying.item.title}
-              artists={nowPlaying.item.artists}
-              albumTitle={nowPlaying.item.album.title}
-            />
+      <LyricsToggle showLyrics={showLyrics} onToggle={() => setShowLyrics(!showLyrics)} />
+
+      <div className={`md:w-full ${showLyrics ? 'md:max-w-6xl' : 'md:max-w-3xl'} bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10 transition-all duration-300`}>
+        <div className={`flex flex-col md:flex-row min-w-full gap-8 flex-col-reverse`}>
+          <div className={`flex flex-col ${showLyrics ? "" : "md:flex-row"} items-center justify-center gap-8`}>
+            <div className={showLyrics ? "hidden md:block" : ""}>
+              <AlbumCover
+                albumArt={nowPlaying.albumArt}
+                albumTitle={nowPlaying.item.album.title}
+                artistArt={nowPlaying.artistArt}
+              />
             </div>
-            <ProgressBar
-              progress={(nowPlaying.position / nowPlaying.item.duration) * 100}
-              position={nowPlaying.position}
-              duration={nowPlaying.item.duration}
-            />
+            <div className="flex-1 flex flex-col text-white space-y-6 w-screen max-w-xs md:max-w-sm">
+              <TrackInfo
+                title={nowPlaying.item.title}
+                artists={nowPlaying.item.artists}
+                albumTitle={nowPlaying.item.album.title}
+              />
+              <ProgressBar
+                progress={(nowPlaying.position / nowPlaying.item.duration) * 100}
+                position={nowPlaying.position}
+                duration={nowPlaying.item.duration}
+                paused={nowPlaying.paused}
+              />
+            </div>
           </div>
+          {showLyrics && (
+            <div className="flex-1 lg:border-l lg:border-white/10 lg:pl-8">
+              <Lyrics
+                artistName={nowPlaying.item.artists[0].name}
+                trackName={nowPlaying.item.title}
+                albumName={nowPlaying.item.album.title}
+                duration={nowPlaying.item.duration}
+                position={nowPlaying.position}
+                paused={nowPlaying.paused}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
