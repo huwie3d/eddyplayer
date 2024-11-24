@@ -52,8 +52,8 @@ function App() {
         // HACK:
         // if weve changed tracks and we're playing
         // flick pause on and off to sync lyrics and progress bar
-        if (prevNowPlaying?.item.title !== data.item.title && data.paused) {
-          console.log("Flicking pause");
+        if (prevNowPlaying?.item.title && prevNowPlaying?.item.title !== data.item.title && !data.paused) {
+          console.log("Flicking pause", prevNowPlaying?.item.title, data.item.title);
           setNowPlaying((prev) => prev && { ...prev, paused: true });
           setTimeout(() => {
             setNowPlaying((prev) => prev && { ...prev, paused: false });
