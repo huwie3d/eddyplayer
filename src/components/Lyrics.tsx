@@ -91,7 +91,7 @@ export function BasicLyrics({
           currentTime * 1000,
           line.time,
           lines.lines[i + 1]?.time ?? lines.linesEnd,
-          1000
+          0//1000
         );
         return (
           <div
@@ -99,7 +99,6 @@ export function BasicLyrics({
             className={`w-full max-w-full transition-transform bg-transparent duration-0 mb-2 md:mb-4 py-2 text-left origin-left text-3xl lg:text-5xl ${
               segStatus.isActive ? "scale-100 text-white" : "scale-90 text-white/60"
             } lg:transition-all lg:duration-500 ease-in-out`}
-            // style={styles}
           >
             <div
               ref={

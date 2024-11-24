@@ -124,7 +124,7 @@ function App() {
         } bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10 transition-all duration-300`}
       >
         <div
-          className={`flex flex-col md:flex-row min-w-full gap-8 flex-col-reverse`}
+          className={`flex flex-col md:flex-row min-w-full gap-8`}
         >
           <div
             className={`flex flex-col ${
@@ -138,7 +138,7 @@ function App() {
                 artistArt={nowPlaying.artistArt}
               />
             </div>
-            <div className="flex-1 flex flex-col text-white space-y-6 w-screen max-w-xs md:max-w-sm">
+            <div className={`flex-1 flex flex-col text-white space-y-6 w-screen max-w-xs ${showLyrics ? "md:px-4" : "md:max-w-sm"}`}>
               <TrackInfo
                 title={nowPlaying.item.title}
                 artists={nowPlaying.item.artists}

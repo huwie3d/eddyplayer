@@ -18,32 +18,32 @@ const MeshBg = ({
     center: { x: 50, y: 50 },
   })
 
-  useEffect(() => {
-    const animateBreathe = () => {
-      const time = Date.now() / 1000
-      setBreatheBL(50 + Math.sin(time) * 25)
-      setBreatheBR(50 + Math.cos(time) * 25)
-      setBreatheTR(50 + Math.sin(time / 1.2) * 25)
-    }
+  // useEffect(() => {
+  //   const animateBreathe = () => {
+  //     const time = Date.now() / 1000
+  //     setBreatheBL(50 + Math.sin(time) * 25)
+  //     setBreatheBR(50 + Math.cos(time) * 25)
+  //     setBreatheTR(50 + Math.sin(time / 1.2) * 25)
+  //   }
 
-    // const moveSpots = () => {
-    //   setPositions({
-    //     topLeft: { x: 20 + Math.random() * 10, y: 20 + Math.random() * 10 },
-    //     topRight: { x: 80 + Math.random() * 10, y: 10 + Math.random() * 10 },
-    //     bottomLeft: { x: 10 + Math.random() * 10, y: 80 + Math.random() * 10 },
-    //     bottomRight: { x: 75 + Math.random() * 10, y: 75 + Math.random() * 10 },
-    //     center: { x: 45 + Math.random() * 10, y: 45 + Math.random() * 10 },
-    //   })
-    // }
+  //   // const moveSpots = () => {
+  //   //   setPositions({
+  //   //     topLeft: { x: 20 + Math.random() * 10, y: 20 + Math.random() * 10 },
+  //   //     topRight: { x: 80 + Math.random() * 10, y: 10 + Math.random() * 10 },
+  //   //     bottomLeft: { x: 10 + Math.random() * 10, y: 80 + Math.random() * 10 },
+  //   //     bottomRight: { x: 75 + Math.random() * 10, y: 75 + Math.random() * 10 },
+  //   //     center: { x: 45 + Math.random() * 10, y: 45 + Math.random() * 10 },
+  //   //   })
+  //   // }
 
-    const breatheIntervalId = setInterval(animateBreathe, 50) // Update every 50ms for smooth animation
-    //const moveIntervalId = setInterval(moveSpots, 5000) // Move spots every 5 seconds
+  //   const breatheIntervalId = setInterval(animateBreathe, 50) // Update every 50ms for smooth animation
+  //   //const moveIntervalId = setInterval(moveSpots, 5000) // Move spots every 5 seconds
 
-    return () => {
-      clearInterval(breatheIntervalId)
-      //clearInterval(moveIntervalId)
-    } // Cleanup on unmount
-  }, [])
+  //   return () => {
+  //     clearInterval(breatheIntervalId)
+  //     //clearInterval(moveIntervalId)
+  //   } // Cleanup on unmount
+  // }, [])
 
   return (
     <div

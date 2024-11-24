@@ -41,7 +41,7 @@ export const useThrottle = (callback: Function, delay: number) => {
  *
  * @param {Object} options - An object containing the following properties:
  *   - {number} duration - The duration of the timer in seconds.
- *   - {number} currentTime - The current time of the timer in seconds.
+ *   - {number} currentTime - The current time of the external timer in seconds.
  *   - {function} onUpdate - An optional callback function to be called whenever the timer updates.
  *   - {function} onAttemptToUpdateInternalTime - An optional callback function to be called whenever the timer attempts to update the internal time.
  *   - {number} throttleBy - An optional number of milliseconds to throttle the timer updates by. Defaults to 100.
@@ -108,6 +108,16 @@ export const useSmoothTimer = ({
       }
     }
   }, [duration, internalTime, onUpdate]);
+
+  useEffect(() => {
+    // is the time we are given drastically less or greater than the current time?
+    if (Math.abs(internalTime - currentTime) > 1) {
+      // if so, we need to update the internal time
+      setInternalTime(currentTime);
+      startTimeRef.current = null;
+      startValueRef.current = currentTime;
+    }
+  }, [currentTime])
   
   useEffect(() => {
     if (
@@ -119,13 +129,6 @@ export const useSmoothTimer = ({
       startTimeRef.current = null;
       startValueRef.current = currentTime;
       return;
-    }
-    // is the time we are given drastically less or greater than the current time?
-    if (Math.abs(internalTime - currentTime) > 10) {
-      // if so, we need to update the internal time
-      setInternalTime(currentTime);
-      startTimeRef.current = null;
-      startValueRef.current = currentTime;
     }
   
     if (startTimeRef.current === null) {
