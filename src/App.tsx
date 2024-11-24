@@ -69,6 +69,18 @@ function App() {
     return () => clearInterval(interval);
   }, [config, isConfigured]);
 
+  useEffect(() => {
+    // Assuming fetchLyrics is a function that fetches the lyrics
+    fetchLyrics().then(lyrics => {
+      if (lyrics) {
+        setLyricsAvailable(true);
+      } else {
+        setLyricsAvailable(false);
+        setShowLyrics(false); // Automatically switch off the LyricsToggle
+      }
+    });
+  }, []);
+
   if (!isConfigured) {
     return (
       <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black flex items-center justify-center p-4">
