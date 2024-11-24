@@ -61,9 +61,9 @@
 @media (max-width: 1024px) {
   .blur-vignette {
     --top-inset: 2rem;
-    --bottom-inset: 14rem;
+    --bottom-inset: 7rem;
     --top-transition: 7rem;
-    --bottom-transition: 95rem;
+    --bottom-transition: 12rem;
     --blur: 6px;
   }
 }
@@ -74,7 +74,7 @@
     --top-inset: 2rem;
     --bottom-inset: 4rem;
     --top-transition: 7rem;
-    --bottom-transition: 95rem;
+    --bottom-transition: 6rem;
     --blur: 6px;
   }
 }
