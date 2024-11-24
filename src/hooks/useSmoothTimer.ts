@@ -113,7 +113,7 @@ export const useSmoothTimer = ({
 
   useEffect(() => {
     // is the time we are given drastically less or greater than the current time?
-    if (Math.abs(internalTime - currentTime) > 1) {
+    if (Math.abs(internalTime - currentTime) > .1) {
       // if so, we need to update the internal time
       setInternalTime(currentTime);
       startTimeRef.current = null;

@@ -8,11 +8,11 @@ interface AlbumCoverProps {
 
 export function AlbumCover({ albumArt, albumTitle, artistArt }: AlbumCoverProps) {
   return (
-    <div className="relative">
+    <div className="relative aspect-square object-contain md:w-72 md:h-72 min-w-72">
       <img
         src={albumArt}
         alt={albumTitle}
-        className="w-72 h-72 min-w-72 rounded-lg shadow-2xl border border-neutral-500/30"
+        className="rounded-xl object-contain shadow-2xl border border-neutral-500/30"
       />
               {artistArt && (
           <img

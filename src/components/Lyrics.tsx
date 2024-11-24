@@ -65,7 +65,8 @@ export function BasicLyrics({
       if (activeLyricRef.current) {
         activeLyricRef.current.scrollIntoView({
           // if we are after the first three seconds and we've just loaded, we want to scroll instantly no matter device size
-          behavior: isMd && (hasJustLoaded && currentTime * 1000 > 3) ? "smooth" : "instant",
+          //behavior: isMd && (hasJustLoaded && currentTime * 1000 > 3) ? "smooth" : "instant",
+          behavior: (hasJustLoaded && currentTime * 1000 > 3) ? "smooth" : "instant",
           block: "center",
         });
         if (!hasJustLoaded) {
@@ -85,18 +86,18 @@ export function BasicLyrics({
   return (
     <div className="flex flex-col hide-scrollbar w-full">
       {/* if we are in the first like three seconds and no line is active, we set ref to this to scroll up */}
-      <div ref={currentTime * 1000 < 5 && currentTime < lines.lines[0]?.time ? activeLyricRef : null} />
+      <div ref={currentTime * 1000 > 5 && currentTime < lines.lines[0]?.time ? activeLyricRef : null} />
       {lyrics?.lines.lines.map((line, i) => {
         const segStatus = getLyricStatus(
           currentTime * 1000,
           line.time,
           lines.lines[i + 1]?.time ?? lines.linesEnd,
-          0//1000
+          500//1000
         );
         return (
           <div
             key={String(i) + line.text}
-            className={`w-full max-w-full transition-transform bg-transparent duration-0 mb-2 md:mb-4 py-2 text-left origin-left text-3xl lg:text-5xl ${
+            className={`w-full max-w-full transition-transform bg-transparent duration-0 mb-6 md:mb-8 pl-2 text-left origin-left font-semibold text-4xl lg:text-5xl ${
               segStatus.isActive ? "scale-100 text-white" : "scale-90 text-white/60"
             } lg:transition-all lg:duration-500 ease-in-out`}
           >
@@ -106,7 +107,7 @@ export function BasicLyrics({
                   ? activeLyricRef
                   : null
               }
-              className={`top-[12vh] h-4 w-4 absolute rounded-full`}
+              className={`top-[20vh] md:top-[10.2vh] h-4 w-4 absolute rounded-full`}
             />
             {line.text || "· · ·"}
           </div>
@@ -128,42 +129,54 @@ export function Lyrics({ artistName, trackName, albumName, duration, position, p
 
   if(isLoading) {
     return (
-      <div className="text-white/60 animate-pulse">
-        Loading lyrics...
+      < div className="h-screen max-h-min md:max-h-[calc(33.5rem)]">
+      <h2 className="absolute top-8 text-xl font-semibold hidden md:block">Lyrics</h2>
+      <div className="text-white/60 text-6xl pt-16">
+        Loading lyrics
+      </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-white/60">
-        No lyrics found!
+      < div className="h-screen max-h-min md:max-h-[calc(33.5rem)]">
+      <h2 className="absolute top-8 text-xl font-semibold hidden md:block">Lyrics</h2>
+      <div className="text-white/60 text-6xl pt-16">
+        No lyrics found
+      </div>
       </div>
     );
   }
 
+  const lessThanMd = window.innerWidth < 1024;
 
   // get the type of lyrics. is it jlf or parsed lyrics
   return (
-    <div className="text-white">
-      <h2 className="fixed text-xl font-semibold">Lyrics</h2>
+    <div className="relative text-white -mx-8 px-4 md:px-8">
+      <h2 className="z-10 absolute top-8 text-xl font-semibold hidden md:block">Lyrics</h2>
+      <div className="blur-vignette" />
       <div
         ref={scrollContainerRef}
-        className="space-y-4 overflow-y-auto max-h-[30rem] pr-4 -mb-10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+        className="hide-scrollbar space-y-4 overflow-y-auto -ml-1 md:ml-0 max-h-[88vh] md:max-h-[calc(33.5rem)] -mb-32 pr-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
         style={{
-          maskImage: `linear-gradient(to bottom, transparent 2rem, black 4rem, black 93%, transparent 97%)`,
+          maskImage: `linear-gradient(to bottom, transparent 0rem, black 8rem, black 50%, #000${lessThanMd ? '1' : '3'} 85%, transparent 98%)`,
           maskComposite: 'intersect',
         }}
       >
-        <div className="h-12"></div>
+        <div className="h-[12rem]"></div>
         {lyrics && (lyrics as JLF).lines !== undefined ? (
           <BasicLyrics lyrics={lyrics as JLF} currentTime={currentTime} />
-        ) : (
-          <div className="text-white/60">
-            No lyrics found
+        ) : lyrics && (lyrics as any[]).length !== 0 ?
+        <div className="text-white/60 text-6xl">
+          No support for this format yet!
+        </div>
+        : (
+          <div className="text-white/80 text-6xl">
+            Instrumental
           </div>
         )}
-        <div className="h-24"></div>
+        <div className="h-screen"></div>
       </div>
     </div>
   )

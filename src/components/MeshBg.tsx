@@ -47,7 +47,7 @@ const MeshBg = ({
 
   return (
     <div
-      className={`absolute inset-0 transition-all duration-5000 ease-in-out ${className}`}
+      className={`absolute inset-0 transition-all duration-5000 ease-in-out pointer-events-none ${className}`}
       style={{
         backgroundColor: vibrant,
         backgroundImage: `

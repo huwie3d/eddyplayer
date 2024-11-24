@@ -30,9 +30,9 @@ interface NowPlayingResponse {
 }
 
 function App() {
+  const { config, isConfigured, updateConfig, updateMode } = useConfig();
   const [nowPlaying, setNowPlaying] = useState<NowPlayingResponse | null>(null);
-  const [showLyrics, setShowLyrics] = useState(false);
-  const { config, isConfigured, updateConfig } = useConfig();
+  const [showLyrics, setShowLyrics] = useState(config.currentMode === "lyrics");
   const { colors } = useAlbumColors(nowPlaying?.albumArt || "");
 
   useEffect(() => {
@@ -105,7 +105,6 @@ function App() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 transition-all duration-1000 relative overflow-hidden">
       <MeshBg colors={colors} />
-      <div className="absolute inset-0 backdrop-blur-3xl opacity-30" />
 
       <ConfigMenu
         onSave={updateConfig}
@@ -115,30 +114,30 @@ function App() {
 
       <LyricsToggle
         showLyrics={showLyrics}
-        onToggle={() => setShowLyrics(!showLyrics)}
+        onToggle={() => {setShowLyrics(!showLyrics); updateMode(!showLyrics ? "lyrics" : "main")}}
       />
 
       <div
         className={`md:w-full ${
-          showLyrics ? "md:max-w-6xl" : "md:max-w-3xl"
-        } bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10 transition-all duration-300`}
+          showLyrics ? "md:max-w-6xl p-6 h-[90vh] md:h-auto mt-10 md:mt-0" : "md:max-w-3xl p-8"
+        } bg-black/30 frosted-glass rounded-3xl shadow-2xl relative transition-all duration-300`}
       >
         <div
-          className={`flex flex-col md:flex-row min-w-full gap-8`}
+          className={`flex flex-col-reverse md:flex-row min-w-full gap-4 my-2`}
         >
           <div
             className={`flex flex-col ${
-              showLyrics ? "" : "md:flex-row"
+              showLyrics ? "lg:border-white/10 lg:pr-4 lg:border-r" : "md:flex-row"
             } items-center justify-center gap-8`}
           >
-            <div className={showLyrics ? "hidden md:block" : ""}>
+            <div className={showLyrics ? "hidden md:block md:mt-2" : ""}>
               <AlbumCover
                 albumArt={nowPlaying.albumArt}
                 albumTitle={nowPlaying.item.album.title}
                 artistArt={nowPlaying.artistArt}
               />
             </div>
-            <div className={`flex-1 flex flex-col text-white space-y-6 w-screen max-w-xs ${showLyrics ? "md:px-4" : "md:max-w-sm"}`}>
+            <div className={`flex-1 z-10 flex flex-col text-white w-screen max-w-xs ${showLyrics ? "md:px-4 space-y-2" : "md:max-w-sm space-y-6"}`}>
               <TrackInfo
                 title={nowPlaying.item.title}
                 artists={nowPlaying.item.artists}
@@ -155,7 +154,7 @@ function App() {
             </div>
           </div>
           {showLyrics && (
-            <div className="flex-1 lg:border-l lg:border-white/10 lg:pl-8">
+            <div className="flex-1 h-[74vh] min-h-[74vh] md:h-auto ml-3 md:min-h-fit -my-8">
               <Lyrics
                 artistName={nowPlaying.item.artists[0].name}
                 trackName={nowPlaying.item.title}

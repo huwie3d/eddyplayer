@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 interface Config {
   apiUrl: string;
   apiKey: string;
+  currentMode: string;
 }
 
 const CONFIG_KEY = 'eddy-now-playing-config';
@@ -12,7 +13,8 @@ export function useConfig() {
     const stored = localStorage.getItem(CONFIG_KEY);
     return stored ? JSON.parse(stored) : {
       apiUrl: import.meta.env.VITE_API_BASE_URL || '',
-      apiKey: import.meta.env.VITE_API_KEY || ''
+      apiKey: import.meta.env.VITE_API_KEY || '',
+      currentMode: "lyrics",
     };
   });
 
@@ -27,8 +29,19 @@ export function useConfig() {
 
   const updateConfig = (apiUrl: string, apiKey: string) => {
     // remove trailing slash from api url
-    setConfig({ apiUrl: apiUrl.replace(/\/+$/, ''), apiKey });
+    setConfig((prev) => ({
+      ...prev,
+      apiUrl: apiUrl.replace(/\/$/, ''),
+      apiKey,
+    }));
   };
 
-  return { config, isConfigured, updateConfig };
+  const updateMode = (mode: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      currentMode: mode,
+    }));
+  };
+
+  return { config, isConfigured, updateConfig, updateMode };
 }
