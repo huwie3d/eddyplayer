@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { JLF, SyncedLines, SyncedMetadata } from '../types/lyrics';
 
 interface LRCLibResponse {
   id: number;
@@ -17,28 +18,46 @@ interface ParsedLyric {
   text: string;
 }
 
-function parseLRC(lrc: string): ParsedLyric[] {
-  const lines = lrc.split('\n');
-  const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2})\]/;
-  
-  return lines
-    .map(line => {
-      const match = timeRegex.exec(line);
-      if (!match) return null;
-      
-      const minutes = parseInt(match[1]);
-      const seconds = parseInt(match[2]);
-      const centiseconds = parseInt(match[3]);
-      const time = minutes * 60 + seconds + centiseconds / 100;
-      const text = line.replace(timeRegex, '').trim();
-      
-      return { time, text };
-    })
-    .filter((line): line is ParsedLyric => line !== null && line.text !== '');
+export default function lrcToJlf(lrcContent: string, metadata: SyncedMetadata, source = "LRCLib") {
+  const lines = lrcContent.split('\n');
+  const syncedLines: SyncedLines = {
+      lines: [],
+      linesEnd: 0,
+  };
+
+  // Process each line in the LRC
+  lines.forEach(line => {
+      const timeMatch = line.match(/\[(\d{2}):(\d{2}\.\d{2})\]/); // Matches [mm:ss.xx]
+      if (timeMatch) {
+          const minutes = parseInt(timeMatch[1], 10);
+          const seconds = parseFloat(timeMatch[2]);
+          const timeInMs = (minutes * 60 + seconds) * 1000; // Convert to milliseconds
+          
+          const text = line.replace(/\[\d{2}:\d{2}\.\d{2}\]/, '').trim(); // Remove timestamp
+
+          // Add the synced line to the array
+          syncedLines.lines.push({
+              time: timeInMs,
+              text: text,
+          });
+
+          // Update linesEnd if this is the last line
+          syncedLines.linesEnd = Math.max(syncedLines.linesEnd, timeInMs);
+      }
+  });
+
+  // Construct the JLF object
+  const jlf: JLF = {
+      lines: syncedLines,
+      source: source,
+      metadata: metadata
+  };
+
+  return jlf;
 }
 
 export function useLyrics(artistName?: string, trackName?: string, albumName?: string, duration?: number) {
-  const [lyrics, setLyrics] = useState<ParsedLyric[]>([]);
+  const [lyrics, setLyrics] = useState<JLF|ParsedLyric[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +88,11 @@ export function useLyrics(artistName?: string, trackName?: string, albumName?: s
         const data: LRCLibResponse = await response.json();
         
         if (data.syncedLyrics) {
-          const parsedLyrics = parseLRC(data.syncedLyrics);
+          const parsedLyrics = lrcToJlf(data.syncedLyrics, {
+            Album: data.albumName,
+            Artist: data.artistName,
+            Title: data.trackName,
+          });
           setLyrics(parsedLyrics);
         } else if (data.plainLyrics) {
           // If no synced lyrics, create simple time-less entries

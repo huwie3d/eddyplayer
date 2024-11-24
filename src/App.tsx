@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { AlbumCover } from './components/AlbumCover';
-import { TrackInfo } from './components/TrackInfo';
-import { ProgressBar } from './components/ProgressBar';
-import { ConfigMenu } from './components/ConfigMenu';
-import { Lyrics } from './components/Lyrics';
-import { useConfig } from './hooks/useConfig';
-import { useAlbumColors } from './hooks/useAlbumColors';
-import MeshBg from './components/MeshBg';
-import { LyricsToggle } from './components/LyricsToggle';
+import React, { useEffect, useState } from "react";
+import { AlbumCover } from "./components/AlbumCover";
+import { TrackInfo } from "./components/TrackInfo";
+import { ProgressBar } from "./components/ProgressBar";
+import { ConfigMenu } from "./components/ConfigMenu";
+import { Lyrics } from "./components/Lyrics";
+import { useConfig } from "./hooks/useConfig";
+import { useAlbumColors } from "./hooks/useAlbumColors";
+import MeshBg from "./components/MeshBg";
+import { LyricsToggle } from "./components/LyricsToggle";
 
 interface NowPlayingResponse {
   item: {
@@ -33,7 +33,7 @@ function App() {
   const [nowPlaying, setNowPlaying] = useState<NowPlayingResponse | null>(null);
   const [showLyrics, setShowLyrics] = useState(false);
   const { config, isConfigured, updateConfig } = useConfig();
-  const { colors } = useAlbumColors(nowPlaying?.albumArt || '');
+  const { colors } = useAlbumColors(nowPlaying?.albumArt || "");
 
   useEffect(() => {
     if (!isConfigured) return;
@@ -46,14 +46,26 @@ function App() {
           },
         });
         const data = await response.json();
+        const prevNowPlaying = nowPlaying;
         setNowPlaying(data);
+
+        // HACK:
+        // if weve changed tracks and we're playing
+        // flick pause on and off to sync lyrics and progress bar
+        if (prevNowPlaying?.item.title !== data.item.title && data.paused) {
+          console.log("Flicking pause");
+          setNowPlaying((prev) => prev && { ...prev, paused: true });
+          setTimeout(() => {
+            setNowPlaying((prev) => prev && { ...prev, paused: false });
+          }, 500);
+        }
       } catch (error) {
-        console.error('Failed to fetch now playing:', error);
+        console.error("Failed to fetch now playing:", error);
       }
     };
 
     fetchNowPlaying();
-    const interval = setInterval(fetchNowPlaying, 3000);
+    const interval = setInterval(fetchNowPlaying, 5000);
     return () => clearInterval(interval);
   }, [config, isConfigured]);
 
@@ -101,11 +113,24 @@ function App() {
         currentApiKey={config.apiKey}
       />
 
-      <LyricsToggle showLyrics={showLyrics} onToggle={() => setShowLyrics(!showLyrics)} />
+      <LyricsToggle
+        showLyrics={showLyrics}
+        onToggle={() => setShowLyrics(!showLyrics)}
+      />
 
-      <div className={`md:w-full ${showLyrics ? 'md:max-w-6xl' : 'md:max-w-3xl'} bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10 transition-all duration-300`}>
-        <div className={`flex flex-col md:flex-row min-w-full gap-8 flex-col-reverse`}>
-          <div className={`flex flex-col ${showLyrics ? "" : "md:flex-row"} items-center justify-center gap-8`}>
+      <div
+        className={`md:w-full ${
+          showLyrics ? "md:max-w-6xl" : "md:max-w-3xl"
+        } bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10 transition-all duration-300`}
+      >
+        <div
+          className={`flex flex-col md:flex-row min-w-full gap-8 flex-col-reverse`}
+        >
+          <div
+            className={`flex flex-col ${
+              showLyrics ? "" : "md:flex-row"
+            } items-center justify-center gap-8`}
+          >
             <div className={showLyrics ? "hidden md:block" : ""}>
               <AlbumCover
                 albumArt={nowPlaying.albumArt}
@@ -120,7 +145,9 @@ function App() {
                 albumTitle={nowPlaying.item.album.title}
               />
               <ProgressBar
-                progress={(nowPlaying.position / nowPlaying.item.duration) * 100}
+                progress={
+                  (nowPlaying.position / nowPlaying.item.duration) * 100
+                }
                 position={nowPlaying.position}
                 duration={nowPlaying.item.duration}
                 paused={nowPlaying.paused}

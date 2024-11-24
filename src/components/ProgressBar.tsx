@@ -10,10 +10,10 @@ interface ProgressBarProps {
 
 export function ProgressBar({ position, duration, paused }: ProgressBarProps) {
   const { currentTime } = useSmoothTimer({
-    duration,
+    duration: duration,
     currentTime: position,
+    throttleBy: 250,
     isActivelyPlaying: !paused,
-    bounds: [1, 1], // 2-second bounds for sync
   });
 
   const progress = (currentTime / duration) * 100;
