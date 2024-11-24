@@ -77,6 +77,8 @@ export const useSmoothTimer = ({
   const throttledSetInternalTime = useThrottle((s) => {setInternalTime(s); updateTime();}, throttleBy);
 
   const animate = useCallback((time: DOMHighResTimeStamp) => {
+    // if we aren't playing, don't animate
+    if (!isActivelyPlaying) return;
     if (startTimeRef.current !== null) {
       const elapsed = (time - startTimeRef.current) / 1000; // Convert ms to seconds
       const predicted = startValueRef.current + elapsed;
