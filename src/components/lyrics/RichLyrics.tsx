@@ -85,7 +85,7 @@ export function RichLyrics({
             {memoizedRichSections.map((section, i) => (
               <div
                 key={i + section.lines[0].text + "section"}
-                className={`text-3xl md:text-4xl lg:text-5xl ${isFullPage && "xl:text-5xl"} text-gray-400`}
+                className={`text-3xl md:text-4xl lg:text-5xl ${isFullPage && "xl:text-6xl"} text-gray-400`}
               >
                 {section.lines.map((line, j) => {
                   const segStatus = getLyricStatus(
@@ -116,7 +116,7 @@ export function RichLyrics({
                           textAlign: section.lyricPos as "center" | "left",
                         } as CSSProperties
                       }
-                      className={`transition-all bg-transparent duration-1000 ease-in-out mb-4 md:mb-6 lg:mb-8 py-3 leading-tight origin-[--lyric-line-dir]
+                      className={`transition-all bg-transparent duration-1000 ease-in-out md:mb-2 lg:mb-4 py-3 leading-tight origin-[--lyric-line-dir]
                         ${segStatus.isActive ? "text-gray-200/75 scale-100" : "scale-90"}`}
                     >
                       <div
