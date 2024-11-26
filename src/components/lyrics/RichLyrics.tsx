@@ -9,10 +9,12 @@ export function RichLyrics({
   lyrics,
   copyright,
   smt,
+  isFullPage
 }: {
   lyrics: JLF;
   copyright: string | null;
   smt: TimerControls;
+  isFullPage: boolean;
 }) {
   const OFFSET = 0;
   const activeLyricRef = useRef<HTMLDivElement>(null);
@@ -83,7 +85,7 @@ export function RichLyrics({
             {memoizedRichSections.map((section, i) => (
               <div
                 key={i + section.lines[0].text + "section"}
-                className="text-3xl md:text-4xl lg:text-5xl text-gray-400"
+                className={`text-3xl md:text-4xl lg:text-5xl ${isFullPage && "xl:text-5xl"} text-gray-400`}
               >
                 {section.lines.map((line, j) => {
                   const segStatus = getLyricStatus(
@@ -114,7 +116,7 @@ export function RichLyrics({
                           textAlign: section.lyricPos as "center" | "left",
                         } as CSSProperties
                       }
-                      className={`transition-all bg-transparent duration-1000 ease-in-out mb-2 py-3 leading-tight origin-[--lyric-line-dir]
+                      className={`transition-all bg-transparent duration-1000 ease-in-out mb-4 md:mb-6 lg:mb-8 py-3 leading-tight origin-[--lyric-line-dir]
                         ${segStatus.isActive ? "text-gray-200/75 scale-100" : "scale-90"}`}
                     >
                       <div
@@ -147,7 +149,7 @@ export function RichLyrics({
                         return (
                           <span
                             key={i + j + k + seg.text}
-                            className={`transition-all bg-transparent duration-100 ease-in mb-4`}
+                            className={`transition-all bg-transparent duration-100 ease-in mb-2`}
                             style={styles}
                           >
                             {seg.text}
@@ -157,7 +159,7 @@ export function RichLyrics({
                       })}
                       {line.bgVox && (
                         <div
-                          className={`transition-all bg-transparent duration-700 text-2xl md:text-3xl lg:text-4xl origin-[--lyric-line-dir] ${
+                          className={`transition-all bg-transparent duration-700 text-2xl md:text-3xl lg:text-4xl ${isFullPage && "xl:text-5xl"} origin-[--lyric-line-dir] ${
                             bgStatus?.isActive
                               ? "text-gray-200/75 scale-100"
                               : "scale-95"
@@ -190,7 +192,7 @@ export function RichLyrics({
                             return (
                               <span
                                 key={i + j + k + "bgVox-seg" + seg.text}
-                                className={`transition-all bg-transparent duration-100 ease-in mb-4`}
+                                className={`transition-all bg-transparent duration-100 ease-in mb-2`}
                                 style={styles}
                               >
                                 {seg.text}
