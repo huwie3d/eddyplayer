@@ -31,7 +31,7 @@ export const BasicLyrics = memo(function BasicLyrics({
       }
     }, 250); // Use timeout instead of interval
     return () => clearTimeout(timer);
-  }, [activeLyricRef, currentTime, hasJustLoaded]);
+  }, [activeLyricRef.current, currentTime, hasJustLoaded]);
 
   if (lyrics == null) {
     return null;
