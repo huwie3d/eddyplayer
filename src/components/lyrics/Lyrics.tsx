@@ -119,7 +119,7 @@ export function Lyrics({
       <div className="blur-vignette" />
       <div
         ref={scrollContainerRef}
-        className={`hide-scrollbar space-y-4 overflow-y-auto -ml-1 md:ml-0 max-h-[88vh] ${isFullPage ? "md:max-h-[calc(95vh-9rem)]" : "md:max-h-[calc(33.5rem)] -mb-36 md:mb-0"} pr-4`}
+        className={`hide-scrollbar space-y-4 overflow-y-auto ml-4 md:ml-0 max-h-[88vh] ${isFullPage ? "md:max-h-[calc(95vh-9rem)]" : "md:max-h-[calc(33.5rem)] md:mb-0"} pr-4`}
         style={{
           maskImage: `linear-gradient(to bottom, transparent 0rem, black 8rem, black 50%, #000${lessThanMd ? "1" : "5"} 85%, transparent 98%)`,
           maskComposite: "intersect",

@@ -127,7 +127,7 @@ export function RichLyrics({
                             ? activeLyricRef
                             : null
                         }
-                        className="top-[20vh] md:top-[10.2vh] h-4 w-4 absolute rounded-full"
+                        className={`top-48 absolute rounded-full bg-blue-500`}
                       />
                       {line.segments.map((seg, k) => {
                         const segStatus = getLyricStatus(

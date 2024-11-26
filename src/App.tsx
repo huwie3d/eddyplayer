@@ -184,7 +184,7 @@ function App() {
         </div>
         {showLyrics ? (
           <div
-            className={`flex-1 md:h-auto ml-3 md:min-h-fit -my-8 ${config.fullmode ? "grid place-items-center max-w-max w-full pt-32 pl-[2vw] pr-8 col-span-4 max-h-full" : ""}`}
+            className={`flex-1 md:h-auto ml-3 md:min-h-fit -my-8 ${config.fullmode ? "grid place-items-center max-w-max w-full pt-32 pl-[2vw] pr-8 col-span-4 max-h-full" : "-mb-48"}`}
           >
             <Lyrics
               artistName={nowPlaying.item.artists[0].name}

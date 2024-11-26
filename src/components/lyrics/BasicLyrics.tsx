@@ -73,7 +73,7 @@ export const BasicLyrics = memo(function BasicLyrics({
                   ? activeLyricRef
                   : null
               }
-              className={`top-[20vh] md:top-[10.2vh] h-4 w-4 absolute rounded-full`}
+              className={`top-48 absolute rounded-full bg-blue-500`}
             />
             {line.text || "· · ·"}
           </div>
