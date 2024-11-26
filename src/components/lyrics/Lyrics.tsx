@@ -1,7 +1,9 @@
-import { useRef, useEffect, useState } from "react";
-import { useLyrics } from "../hooks/useLyrics";
-import { useSmoothTimer } from "../hooks/useSmoothTimer";
-import { JLF } from "../types/lyrics";
+import { useEffect, useRef } from "react";
+import { ParsedLyric, useLyrics } from "../../hooks/useLyrics";
+import { useSmoothTimer } from "../../hooks/useSmoothTimer";
+import { JLF } from "../../types/lyrics";
+import { BasicLyrics } from "./BasicLyrics";
+import { RichLyrics } from "./RichLyrics";
 
 interface LyricsProps {
   artistName?: string;
@@ -13,7 +15,7 @@ interface LyricsProps {
   isFullPage: boolean;
 }
 
-export default function getLyricStatus(
+export function getLyricStatus(
   currentTime: number,
   lyricStart: number,
   lyricEnd: number,
@@ -48,87 +50,6 @@ export default function getLyricStatus(
   };
 }
 
-export function BasicLyrics({
-  lyrics,
-  currentTime,
-  isFullPage,
-}: {
-  lyrics: JLF | null;
-  currentTime: number;
-  isFullPage: boolean;
-}) {
-  const activeLyricRef = useRef<HTMLDivElement | null>(null);
-  // for instant scroll on first load
-  const [hasJustLoaded, setHasJustLoaded] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (activeLyricRef.current) {
-        activeLyricRef.current.scrollIntoView({
-          // if we are after the first three seconds and we've just loaded, we want to scroll instantly no matter device size
-          //behavior: isMd && (hasJustLoaded && currentTime * 1000 > 3) ? "smooth" : "instant",
-          behavior:
-            hasJustLoaded && currentTime * 1000 > 3 ? "smooth" : "instant",
-          block: "center",
-        });
-        if (!hasJustLoaded) {
-          setHasJustLoaded(true);
-        }
-      }
-    }, 250); // Use timeout instead of interval
-    return () => clearTimeout(timer);
-  }, [activeLyricRef.current]);
-
-  if (lyrics == null) {
-    return null;
-  }
-
-  const lines = lyrics.lines;
-
-  return (
-    <div className="flex flex-col hide-scrollbar w-full">
-      {/* if we are in the first like three seconds and no line is active, we set ref to this to scroll up */}
-      <div
-        ref={
-          currentTime * 1000 > 5 && currentTime < lines.lines[0]?.time
-            ? activeLyricRef
-            : null
-        }
-      />
-      {lyrics?.lines.lines.map((line, i) => {
-        const segStatus = getLyricStatus(
-          currentTime * 1000,
-          line.time,
-          lines.lines[i + 1]?.time ?? lines.linesEnd,
-          500, //1000
-        );
-        return (
-          <div
-            key={String(i) + line.text}
-            className={`w-full max-w-full transition-transform bg-transparent duration-0 mb-6 md:mb-8 pl-2 text-left origin-left font-semibold text-4xl lg:text-5xl ${
-              segStatus.isActive
-                ? "scale-100 text-white"
-                : "scale-90 text-white/60"
-            } ${isFullPage ? "xl:text-6xl mb-6 md:mb-8 lg:mb-10 xl:mb-12" : " mb-6 md:mb-8"} lg:transition-all lg:duration-500 ease-in-out`}
-          >
-            <div
-              ref={
-                (segStatus.secondsBeforeActive < 500 &&
-                  segStatus.secondsBeforeActive > 0) ||
-                (segStatus.isActive && segStatus.percentage < 50)
-                  ? activeLyricRef
-                  : null
-              }
-              className={`top-[20vh] md:top-[10.2vh] h-4 w-4 absolute rounded-full`}
-            />
-            {line.text || "· · ·"}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export function Lyrics({
   artistName,
   trackName,
@@ -145,12 +66,16 @@ export function Lyrics({
     duration,
   );
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { currentTime } = useSmoothTimer({
+  const smt = useSmoothTimer({
     duration: duration,
     currentTime: position,
-    throttleBy: 250,
+    throttleBy: 150,
     isActivelyPlaying: !paused,
   });
+
+  useEffect(() => {
+    console.log("lyrics", lyrics);
+  }, [lyrics]);
 
   if (isLoading) {
     return (
@@ -177,6 +102,7 @@ export function Lyrics({
             Lyrics
           </h2>
           <div className="text-white/60 text-6xl pt-16">No lyrics found</div>
+          <div>{error}</div>
         </div>
       </div>
     );
@@ -201,15 +127,15 @@ export function Lyrics({
       >
         <div className="h-[12rem]"></div>
         {lyrics && (lyrics as JLF).lines !== undefined ? (
-          <BasicLyrics
-            lyrics={lyrics as JLF}
-            currentTime={currentTime}
-            isFullPage={isFullPage}
-          />
-        ) : lyrics && (lyrics as any[]).length !== 0 ? (
-          <div className="text-white/60 text-6xl">
-            No support for this format yet!
-          </div>
+          lyrics && (lyrics as JLF).richsync ? (
+            <RichLyrics lyrics={lyrics as JLF} copyright={""} smt={smt} />
+          ) : (
+            <BasicLyrics
+              lyrics={lyrics as JLF}
+              currentTime={smt.currentTime}
+              isFullPage={isFullPage}
+            />
+          )
         ) : (
           <div className="text-white/80 text-6xl">Instrumental</div>
         )}

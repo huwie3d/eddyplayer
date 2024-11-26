@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, useCallback, SetStateAction } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  SetStateAction,
+} from "react";
 
 interface UseSmoothTimerOptions {
   duration: number;
@@ -25,14 +31,14 @@ export const useThrottle = (callback: Function, delay: number) => {
   const lastCall = useRef(0);
 
   return useCallback(
-    (...args: any[]) => {
+    (...args: unknown[]) => {
       const now = Date.now();
       if (now - lastCall.current >= delay) {
         lastCall.current = now;
         callback(...args);
       }
     },
-    [callback, delay]
+    [callback, delay],
   );
 };
 
@@ -70,57 +76,65 @@ export const useSmoothTimer = ({
     if (onUpdate) onUpdate(internalTime);
   }, [internalTime, onUpdate]);
 
-  const trackUpdateAttempt =useCallback(() => {
-    if (onAttemptToUpdateInternalTime) onAttemptToUpdateInternalTime(internalTime);
-  } , [internalTime, onAttemptToUpdateInternalTime]);
+  const trackUpdateAttempt = useCallback(() => {
+    if (onAttemptToUpdateInternalTime)
+      onAttemptToUpdateInternalTime(internalTime);
+  }, [internalTime, onAttemptToUpdateInternalTime]);
 
-  const throttledSetInternalTime = useThrottle((s: SetStateAction<number>) => {setInternalTime(s); updateTime();}, throttleBy);
+  const throttledSetInternalTime = useThrottle((s: SetStateAction<number>) => {
+    setInternalTime(s);
+    updateTime();
+  }, throttleBy);
 
-  const animate = useCallback((time: DOMHighResTimeStamp) => {
-    // if we aren't playing, don't animate
-    if (!isActivelyPlaying) return;
-    if (startTimeRef.current !== null) {
-      const elapsed = (time - startTimeRef.current) / 1000; // Convert ms to seconds
-      const predicted = startValueRef.current + elapsed;
-      const newTime = Math.min(predicted, duration);
-  
-      // Update state only if necessary
-      if (Math.abs(newTime - internalTime) > 0.1) { // Tolerance to avoid excessive updates
-        trackUpdateAttempt()
-        throttledSetInternalTime(newTime);
-        
-        // Schedule non-critical tasks in idle time
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => {
-            if (onUpdate) onUpdate(newTime);
-          });
-        } else {
-          // Fallback if requestIdleCallback is not supported
+  const animate = useCallback(
+    (time: DOMHighResTimeStamp) => {
+      // if we aren't playing, don't animate
+      if (!isActivelyPlaying) return;
+      if (startTimeRef.current !== null) {
+        const elapsed = (time - startTimeRef.current) / 1000; // Convert ms to seconds
+        const predicted = startValueRef.current + elapsed;
+        const newTime = Math.min(predicted, duration);
+
+        // Update state only if necessary
+        if (Math.abs(newTime - internalTime) > 0.1) {
+          // Tolerance to avoid excessive updates
+          trackUpdateAttempt();
+          throttledSetInternalTime(newTime);
+
+          // Schedule non-critical tasks in idle time
+          if ("requestIdleCallback" in window) {
+            requestIdleCallback(() => {
+              if (onUpdate) onUpdate(newTime);
+            });
+          } else {
+            // Fallback if requestIdleCallback is not supported
+            setTimeout(() => {
+              if (onUpdate) onUpdate(newTime);
+            }, 100);
+          }
+        }
+
+        if (predicted < duration) {
+          // we don't need instantaneous updates, so schedule the next frame a few ms out
           setTimeout(() => {
-            if (onUpdate) onUpdate(newTime);
-          }, 100);
+            animationRef.current = requestAnimationFrame(animate);
+          }, 350);
         }
       }
-  
-      if (predicted < duration) {
-        // we don't need instantaneous updates, so schedule the next frame a few ms out
-        setTimeout(() => {
-          animationRef.current = requestAnimationFrame(animate);
-        }, 350);
-      }
-    }
-  }, [duration, internalTime, onUpdate]);
+    },
+    [duration, internalTime, onUpdate],
+  );
 
   useEffect(() => {
     // is the time we are given drastically less or greater than the current time?
-    if (Math.abs(internalTime - currentTime) > .1) {
+    if (Math.abs(internalTime - currentTime) > 0.1) {
       // if so, we need to update the internal time
       setInternalTime(currentTime);
       startTimeRef.current = null;
       startValueRef.current = currentTime;
     }
-  }, [currentTime])
-  
+  }, [currentTime]);
+
   useEffect(() => {
     if (
       !isActivelyPlaying ||
@@ -132,23 +146,23 @@ export const useSmoothTimer = ({
       startValueRef.current = currentTime;
       return;
     }
-  
+
     if (startTimeRef.current === null) {
       startTimeRef.current = performance.now();
       startValueRef.current = currentTime;
     }
-  
+
     setTimeout(() => {
       animationRef.current = requestAnimationFrame(animate);
     }, 100);
-  
+
     return () => {
       if (animationRef.current !== null) {
         cancelAnimationFrame(animationRef.current);
       }
     };
   }, [isActivelyPlaying, currentTime, duration, bounds, internalTime, animate]);
-  
+
   const resetTimer = () => {
     setInternalTime(currentTime);
     startTimeRef.current = null;
@@ -158,12 +172,12 @@ export const useSmoothTimer = ({
       animationRef.current = null;
     }
   };
-  
+
   const setLocalTime = (time: number) => {
     setInternalTime(time);
     startTimeRef.current = null; // Reset the start time on manual set
     startValueRef.current = time;
   };
-  
+
   return { currentTime: internalTime, resetTimer, setLocalTime };
 };

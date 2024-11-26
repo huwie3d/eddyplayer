@@ -3,7 +3,7 @@ import { AlbumCover } from "./components/AlbumCover";
 import { TrackInfo } from "./components/TrackInfo";
 import { ProgressBar } from "./components/ProgressBar";
 import { ConfigMenu } from "./components/ConfigMenu";
-import { Lyrics } from "./components/Lyrics";
+import { Lyrics } from "./components/lyrics/Lyrics";
 import { useConfig } from "./hooks/useConfig";
 import { useAlbumColors } from "./hooks/useAlbumColors";
 import MeshBg from "./components/MeshBg";
@@ -153,12 +153,13 @@ function App() {
           <div
             className={`flex flex-col space-y-4 ${config.fullmode ? "w-full max-w-xs xl:max-w-sm" : "max-w-xs sm:max-w-lg md:max-w-xs"}`}
           >
-            <div className={showLyrics ? `hidden md:block max-w-md` : "max-w-md"}>
+            <div
+              className={showLyrics ? `hidden md:block max-w-md` : "max-w-md"}
+            >
               <AlbumCover
                 albumArt={nowPlaying.albumArt}
                 albumTitle={nowPlaying.item.album.title}
                 artistArt={nowPlaying.artistArt}
-                isFullPage={config.fullmode}
               />
             </div>
             <div
@@ -195,7 +196,9 @@ function App() {
               isFullPage={config.fullmode}
             />
           </div>
-        ) : <div></div>}
+        ) : (
+          <div></div>
+        )}
       </FancyBox>
     </div>
   );

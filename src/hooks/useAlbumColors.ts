@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import Vibrant from 'node-vibrant';
+import { useState, useEffect, useRef } from "react";
+import Vibrant from "node-vibrant";
 
 type RGB = [number, number, number];
 type ColorState = {
@@ -10,8 +10,8 @@ type ColorState = {
 
 function rgbToHex([r, g, b]: RGB): string {
   return (
-    '#' +
-    [r, g, b].map((x) => Math.round(x).toString(16).padStart(2, '0')).join('')
+    "#" +
+    [r, g, b].map((x) => Math.round(x).toString(16).padStart(2, "0")).join("")
   );
 }
 
@@ -38,7 +38,7 @@ function easeInOut(t: number): number {
 }
 
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
-function shuffleArray(array: any[]): void {
+function shuffleArray(array: unknown[]): void {
   for (let i = array.length - 1; i >= 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -48,10 +48,10 @@ function shuffleArray(array: any[]): void {
 export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
   const defaultColors: RGB[] = [
     [26, 26, 26], // #1a1a1a
-    [0, 0, 0],    // #000000
+    [0, 0, 0], // #000000
     [51, 51, 51], // #333333
     [26, 26, 26], // #1a1a1a
-    [0, 0, 0],    // #000000
+    [0, 0, 0], // #000000
   ];
 
   const [colorState, setColorState] = useState<ColorState>({
@@ -67,8 +67,8 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
     if (!imageUrl) return;
 
     const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.src = 'https://corsproxy.io/?' + imageUrl;
+    img.crossOrigin = "Anonymous";
+    img.src = "https://corsproxy.io/?" + imageUrl;
 
     const loadColors = async () => {
       try {
@@ -76,21 +76,27 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
           img.onload = resolve;
           img.onerror = reject;
         });
-        
+
         // Create a new Vibrant instance with quality and samples options
         const v = new Vibrant(img, {
           quality: 1,
-          colorCount: 64
-        })
+          colorCount: 64,
+        });
 
-        const palette = await v.getPalette()
-        
+        const palette = await v.getPalette();
+
         // Convert Vibrant swatches to RGB arrays and ensure we have valid colors
         const newColors: RGB[] = [];
 
         // Try to get colors in priority order
-        const swatchTypes = ['Vibrant', 'Muted', 'DarkVibrant', 'DarkMuted', 'LightVibrant'];
-        
+        const swatchTypes = [
+          "Vibrant",
+          "Muted",
+          "DarkVibrant",
+          "DarkMuted",
+          "LightVibrant",
+        ];
+
         for (const swatchType of swatchTypes) {
           const swatch = palette[swatchType];
           if (swatch && swatch.getRgb) {
@@ -98,22 +104,24 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
             newColors.push([
               Math.round(rgb[0]),
               Math.round(rgb[1]),
-              Math.round(rgb[2])
+              Math.round(rgb[2]),
             ]);
           }
         }
 
         // If we don't have enough colors, pad with random
         while (newColors.length < 5) {
-          newColors.push(defaultColors[Math.floor(Math.random() * newColors.length)]);
+          newColors.push(
+            defaultColors[Math.floor(Math.random() * newColors.length)],
+          );
         }
 
         // // Split first color off so we don't shuffle it
         // const [firstColor, ...restColors] = newColors;
         // shuffleArray(restColors);
-        
+
         // const shuffledColors = [firstColor, ...restColors];
-        
+
         // Start transition to new colors
         setColorState((prev) => ({
           ...prev,
@@ -121,7 +129,7 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
           transitioning: true,
         }));
       } catch (error) {
-        console.error('Failed to extract colors:', error);
+        console.error("Failed to extract colors:", error);
         // On error, ensure we still have valid colors by using defaults
         setColorState((prev) => ({
           ...prev,
@@ -149,13 +157,13 @@ export function useAlbumColors(imageUrl: string, transitionDuration = 1000) {
       if (!startTime.current) startTime.current = timestamp;
       const linearProgress = Math.min(
         1,
-        (timestamp - startTime.current) / transitionDuration
+        (timestamp - startTime.current) / transitionDuration,
       );
 
       const progress = easeInOut(linearProgress);
 
       const interpolatedColors = colorState.current.map((currentColor, i) =>
-        interpolateColor(currentColor, colorState.target[i], progress)
+        interpolateColor(currentColor, colorState.target[i], progress),
       );
 
       setColorState((prev) => ({
@@ -192,7 +200,7 @@ function AlbumArtwork({ imageUrl }) {
   const { colors, isTransitioning } = useAlbumColors(imageUrl, 1000); // 1 second transition
 
   return (
-    <div 
+    <div
       style={{
         background: `linear-gradient(to bottom, ${colors.join(', ')})`,
         transition: isTransitioning ? 'none' : 'background 0.3s ease'

@@ -2,14 +2,12 @@ interface AlbumCoverProps {
   albumArt: string;
   albumTitle: string;
   artistArt: string | null;
-  isFullPage: boolean;
 }
 
 export function AlbumCover({
   albumArt,
   albumTitle,
   artistArt,
-  isFullPage,
 }: AlbumCoverProps) {
   return (
     <div
