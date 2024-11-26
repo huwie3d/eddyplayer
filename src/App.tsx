@@ -8,6 +8,7 @@ import { useConfig } from "./hooks/useConfig";
 import { useAlbumColors } from "./hooks/useAlbumColors";
 import MeshBg from "./components/MeshBg";
 import { LyricsToggle } from "./components/LyricsToggle";
+import { FancyBox } from "./components/fancyBox";
 
 interface NowPlayingResponse {
   item: {
@@ -15,7 +16,7 @@ interface NowPlayingResponse {
     artists: [
       {
         name: string;
-      }
+      },
     ];
     album: {
       title: string;
@@ -52,8 +53,16 @@ function App() {
         // HACK:
         // if weve changed tracks and we're playing
         // flick pause on and off to sync lyrics and progress bar
-        if (prevNowPlaying?.item.title && prevNowPlaying?.item.title !== data.item.title && !data.paused) {
-          console.log("Flicking pause", prevNowPlaying?.item.title, data.item.title);
+        if (
+          prevNowPlaying?.item.title &&
+          prevNowPlaying?.item.title !== data.item.title &&
+          !data.paused
+        ) {
+          console.log(
+            "Flicking pause",
+            prevNowPlaying?.item.title,
+            data.item.title,
+          );
           setNowPlaying((prev) => prev && { ...prev, paused: true });
           setTimeout(() => {
             setNowPlaying((prev) => prev && { ...prev, paused: false });
@@ -67,6 +76,8 @@ function App() {
     fetchNowPlaying();
     const interval = setInterval(fetchNowPlaying, 5000);
     return () => clearInterval(interval);
+    // no need to re-run this effect if now playing changes - we run that in a loop anyways
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, isConfigured]);
 
   if (!isConfigured) {
@@ -103,7 +114,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 transition-all duration-1000 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center transition-all duration-1000 relative overflow-hidden">
       <MeshBg colors={colors} />
 
       <ConfigMenu
@@ -114,30 +125,35 @@ function App() {
 
       <LyricsToggle
         showLyrics={showLyrics}
-        onToggle={() => {setShowLyrics(!showLyrics); updateMode(!showLyrics ? "lyrics" : "main")}}
+        onToggle={() => {
+          setShowLyrics(!showLyrics);
+          updateMode(!showLyrics ? "lyrics" : "main");
+        }}
       />
 
-      <div
-        className={`md:w-full ${
-          showLyrics ? "md:max-w-6xl p-6 h-[90vh] md:h-auto mt-10 md:mt-0" : "md:max-w-3xl p-8"
-        } bg-black/30 frosted-glass rounded-3xl shadow-2xl relative transition-all duration-300`}
-      >
+      <FancyBox showLyrics={showLyrics} isFullPage={!config.fullmode}>
         <div
-          className={`flex flex-col-reverse md:flex-row min-w-full gap-4 my-2`}
+          className={`flex-col ${
+            showLyrics
+              ? "lg:border-white/10 lg:pr-6 lg:border-r"
+              : "md:flex-row"
+          } items-center justify-center gap-8 ${config.fullmode ? "col-span-2 grid place-items-center" : "flex"}`}
         >
           <div
-            className={`flex flex-col ${
-              showLyrics ? "lg:border-white/10 lg:pr-4 lg:border-r" : "md:flex-row"
-            } items-center justify-center gap-8`}
+            className={`flex flex-col ${config.fullmode ? "w-full max-w-min" : "max-w-xs sm:max-w-lg md:max-w-sm md:px-4"}`}
           >
-            <div className={showLyrics ? "hidden md:block md:mt-2" : ""}>
+            <div className={showLyrics ? `hidden md:block` : ""}>
               <AlbumCover
                 albumArt={nowPlaying.albumArt}
                 albumTitle={nowPlaying.item.album.title}
                 artistArt={nowPlaying.artistArt}
+                isFullPage={config.fullmode}
               />
             </div>
-            <div className={`flex-1 z-10 flex flex-col text-white w-screen max-w-xs ${showLyrics ? "md:px-4 space-y-2" : "md:max-w-sm space-y-6"}`}>
+            <div
+              className={`flex-grow z-10 min-w-full text-white mt-3
+                ${showLyrics ? "space-y-2" : "md:max-w-sm space-y-6"}`}
+            >
               <TrackInfo
                 title={nowPlaying.item.title}
                 artists={nowPlaying.item.artists}
@@ -153,20 +169,23 @@ function App() {
               />
             </div>
           </div>
-          {showLyrics && (
-            <div className="flex-1 h-[74vh] min-h-[74vh] md:h-auto ml-3 md:min-h-fit -my-8">
-              <Lyrics
-                artistName={nowPlaying.item.artists[0].name}
-                trackName={nowPlaying.item.title}
-                albumName={nowPlaying.item.album.title}
-                duration={nowPlaying.item.duration}
-                position={nowPlaying.position}
-                paused={nowPlaying.paused}
-              />
-            </div>
-          )}
         </div>
-      </div>
+        {showLyrics && (
+          <div
+            className={`flex-1 md:h-auto ml-3 md:min-h-fit -my-8 ${config.fullmode ? " py-32 px-8 col-span-4 flex max-h-full" : ""}`}
+          >
+            <Lyrics
+              artistName={nowPlaying.item.artists[0].name}
+              trackName={nowPlaying.item.title}
+              albumName={nowPlaying.item.album.title}
+              duration={nowPlaying.item.duration}
+              position={nowPlaying.position}
+              paused={nowPlaying.paused}
+              isFullPage={config.fullmode}
+            />
+          </div>
+        )}
+      </FancyBox>
     </div>
   );
 }
