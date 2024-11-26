@@ -116,7 +116,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center transition-all duration-1000 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center transition-all duration-1000 relative">
       <MeshBg colors={colors} />
 
       <ConfigMenu
@@ -139,13 +139,21 @@ function App() {
           className={`flex-col ${
             showLyrics
               ? "lg:border-white/10 lg:pr-6 lg:border-r"
-              : "md:flex-row"
-          } items-center justify-center gap-8 ${config.fullmode ? "col-span-2 grid place-items-center" : "flex"}`}
+              : "md:flex-row p-12"
+          } items-center justify-center gap-8 ${config.fullmode ? "col-span-2 grid place-items-center" : "flex md:pr-8"}`}
+          style={
+            config.fullmode
+              ? {
+                  maskImage: `linear-gradient(to bottom, transparent 0%, black 15%, black 50%, black 85%, transparent 98%)`,
+                  maskComposite: "intersect",
+                }
+              : {}
+          }
         >
           <div
-            className={`flex flex-col ${config.fullmode ? "w-full max-w-min" : "max-w-xs sm:max-w-lg md:max-w-sm md:px-4"}`}
+            className={`flex flex-col space-y-4 ${config.fullmode ? "w-full max-w-xs xl:max-w-sm" : "max-w-xs sm:max-w-lg md:max-w-xs"}`}
           >
-            <div className={showLyrics ? `hidden md:block` : ""}>
+            <div className={showLyrics ? `hidden md:block max-w-md` : "max-w-md"}>
               <AlbumCover
                 albumArt={nowPlaying.albumArt}
                 albumTitle={nowPlaying.item.album.title}
@@ -154,8 +162,8 @@ function App() {
               />
             </div>
             <div
-              className={`flex-grow z-10 min-w-full text-white mt-3
-                ${showLyrics ? "space-y-2" : "md:max-w-sm space-y-6"}`}
+              className={`flex-grow z-10 min-w-full text-white
+                ${showLyrics ? "space-y-4" : "md:max-w-xs space-y-6"}`}
             >
               <TrackInfo
                 title={nowPlaying.item.title}
@@ -173,7 +181,7 @@ function App() {
             </div>
           </div>
         </div>
-        {showLyrics && (
+        {showLyrics ? (
           <div
             className={`flex-1 md:h-auto ml-3 md:min-h-fit -my-8 ${config.fullmode ? " py-32 px-8 col-span-4 flex max-h-full" : ""}`}
           >
@@ -187,7 +195,7 @@ function App() {
               isFullPage={config.fullmode}
             />
           </div>
-        )}
+        ) : <div></div>}
       </FancyBox>
     </div>
   );

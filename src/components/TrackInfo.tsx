@@ -16,7 +16,7 @@ export function TrackInfo({ title, artists, albumTitle }: TrackInfoProps) {
     document.title = "Eddy - " + title;
   }, [title]);
   return (
-    <div className="md:mb-4 w-screen max-w-xs sm:max-w-lg md:max-w-sm">
+    <div className="md:mb-4 w-screen max-w-xs sm:max-w-lg md:max-w-full">
       <ScrollingText
         text={title}
         className="text-3xl font-bold w-full max-w-xs sm:max-w-lg md:max-w-sm"

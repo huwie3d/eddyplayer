@@ -13,7 +13,7 @@ export function AlbumCover({
 }: AlbumCoverProps) {
   return (
     <div
-      className={`relative aspect-square object-contain ${isFullPage ? "max-w-full" : "max-w-full"} min-w-72`}
+      className={`relative aspect-square object-contain max-w-full min-w-72`}
     >
       <img
         src={albumArt}

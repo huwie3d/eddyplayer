@@ -109,7 +109,7 @@ export function BasicLyrics({
               segStatus.isActive
                 ? "scale-100 text-white"
                 : "scale-90 text-white/60"
-            } ${isFullPage ? "xl:text-6xl" : ""} lg:transition-all lg:duration-500 ease-in-out`}
+            } ${isFullPage ? "xl:text-6xl mb-6 md:mb-8 lg:mb-10 xl:mb-12" : " mb-6 md:mb-8"} lg:transition-all lg:duration-500 ease-in-out`}
           >
             <div
               ref={
