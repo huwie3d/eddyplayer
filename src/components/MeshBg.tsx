@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 const MeshBg = ({ 
   colors, 
   className = ""
-}) => {
+}: { colors: any, className?: string }) => {
   const [vibrant, muted, darkVibrant, darkMuted, lightVibrant] = colors
   const [breatheBL, setBreatheBL] = useState(50)
   const [breatheBR, setBreatheBR] = useState(50)

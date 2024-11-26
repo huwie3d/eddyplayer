@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AlbumCover } from "./components/AlbumCover";
 import { TrackInfo } from "./components/TrackInfo";
 import { ProgressBar } from "./components/ProgressBar";
 import { ConfigMenu } from "./components/ConfigMenu";
-import { Lyrics } from "./components/Lyrics";
+import { Lyrics } from "./components/lyrics/Lyrics";
 import { useConfig } from "./hooks/useConfig";
 import { useAlbumColors } from "./hooks/useAlbumColors";
 import MeshBg from "./components/MeshBg";
 import { LyricsToggle } from "./components/LyricsToggle";
+import { FancyBox } from "./components/FancyBox";
 
 interface NowPlayingResponse {
   item: {
@@ -15,7 +16,7 @@ interface NowPlayingResponse {
     artists: [
       {
         name: string;
-      }
+      },
     ];
     album: {
       title: string;
@@ -52,12 +53,20 @@ function App() {
         // HACK:
         // if weve changed tracks and we're playing
         // flick pause on and off to sync lyrics and progress bar
-        if (prevNowPlaying?.item.title && prevNowPlaying?.item.title !== data.item.title && !data.paused) {
-          console.log("Flicking pause", prevNowPlaying?.item.title, data.item.title);
+        if (
+          prevNowPlaying?.item.title &&
+          prevNowPlaying?.item.title !== data.item.title &&
+          !data.paused
+        ) {
+          console.log(
+            "Flicking pause",
+            prevNowPlaying?.item.title,
+            data.item.title,
+          );
           setNowPlaying((prev) => prev && { ...prev, paused: true });
           setTimeout(() => {
             setNowPlaying((prev) => prev && { ...prev, paused: false });
-          }, 500);
+          }, 50);
         }
       } catch (error) {
         console.error("Failed to fetch now playing:", error);
@@ -67,6 +76,8 @@ function App() {
     fetchNowPlaying();
     const interval = setInterval(fetchNowPlaying, 5000);
     return () => clearInterval(interval);
+    // no need to re-run this effect if now playing changes - we run that in a loop anyways
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, isConfigured]);
 
   if (!isConfigured) {
@@ -83,6 +94,7 @@ function App() {
             onSave={updateConfig}
             currentApiUrl={config.apiUrl}
             currentApiKey={config.apiKey}
+            currentFullmode={config.fullmode}
           />
         </div>
       </div>
@@ -97,47 +109,63 @@ function App() {
           onSave={updateConfig}
           currentApiUrl={config.apiUrl}
           currentApiKey={config.apiKey}
+          currentFullmode={config.fullmode}
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 transition-all duration-1000 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center transition-all duration-1000 relative">
       <MeshBg colors={colors} />
 
       <ConfigMenu
         onSave={updateConfig}
         currentApiUrl={config.apiUrl}
         currentApiKey={config.apiKey}
+        currentFullmode={config.fullmode}
       />
 
       <LyricsToggle
         showLyrics={showLyrics}
-        onToggle={() => {setShowLyrics(!showLyrics); updateMode(!showLyrics ? "lyrics" : "main")}}
+        onToggle={() => {
+          setShowLyrics(!showLyrics);
+          updateMode(!showLyrics ? "lyrics" : "main");
+        }}
       />
 
-      <div
-        className={`md:w-full ${
-          showLyrics ? "md:max-w-6xl p-6 h-[90vh] md:h-auto mt-10 md:mt-0" : "md:max-w-3xl p-8"
-        } bg-black/30 frosted-glass rounded-3xl shadow-2xl relative transition-all duration-300`}
-      >
+      <FancyBox showLyrics={showLyrics} isFullPage={!config.fullmode}>
         <div
-          className={`flex flex-col-reverse md:flex-row min-w-full gap-4 my-2`}
+          className={`flex-col ${
+            showLyrics
+              ? "lg:border-white/10 lg:pr-6 xl:pr-[3vw] lg:border-r"
+              : "md:flex-row p-12"
+          } items-center justify-end gap-8 ${config.fullmode ? "col-span-2 grid place-items-center" : "flex md:pr-8"}`}
+          style={
+            config.fullmode
+              ? {
+                  maskImage: `linear-gradient(to bottom, transparent 0%, black 15%, black 50%, black 85%, transparent 98%)`,
+                  maskComposite: "intersect",
+                }
+              : {}
+          }
         >
           <div
-            className={`flex flex-col ${
-              showLyrics ? "lg:border-white/10 lg:pr-4 lg:border-r" : "md:flex-row"
-            } items-center justify-center gap-8`}
+            className={`flex flex-col space-y-4 ${config.fullmode ? "w-full max-w-xs xl:max-w-sm 2xl:max-w-md" : "max-w-xs sm:max-w-lg md:max-w-xs"}`}
           >
-            <div className={showLyrics ? "hidden md:block md:mt-2" : ""}>
+            <div
+              className={showLyrics ? `hidden md:block max-w-md` : "max-w-md"}
+            >
               <AlbumCover
                 albumArt={nowPlaying.albumArt}
                 albumTitle={nowPlaying.item.album.title}
                 artistArt={nowPlaying.artistArt}
               />
             </div>
-            <div className={`flex-1 z-10 flex flex-col text-white w-screen max-w-xs ${showLyrics ? "md:px-4 space-y-2" : "md:max-w-sm space-y-6"}`}>
+            <div
+              className={`flex-grow z-10 min-w-full text-white
+                ${showLyrics ? "space-y-4" : "md:max-w-xs space-y-6"}`}
+            >
               <TrackInfo
                 title={nowPlaying.item.title}
                 artists={nowPlaying.item.artists}
@@ -153,20 +181,25 @@ function App() {
               />
             </div>
           </div>
-          {showLyrics && (
-            <div className="flex-1 h-[74vh] min-h-[74vh] md:h-auto ml-3 md:min-h-fit -my-8">
-              <Lyrics
-                artistName={nowPlaying.item.artists[0].name}
-                trackName={nowPlaying.item.title}
-                albumName={nowPlaying.item.album.title}
-                duration={nowPlaying.item.duration}
-                position={nowPlaying.position}
-                paused={nowPlaying.paused}
-              />
-            </div>
-          )}
         </div>
-      </div>
+        {showLyrics ? (
+          <div
+            className={`flex-1 md:h-auto ml-3 md:min-h-fit -my-8 ${config.fullmode ? "grid place-items-center max-w-max w-full pt-32 pl-[2vw] pr-8 col-span-4 max-h-full" : "-mb-48"}`}
+          >
+            <Lyrics
+              artistName={nowPlaying.item.artists[0].name}
+              trackName={nowPlaying.item.title}
+              albumName={nowPlaying.item.album.title}
+              duration={nowPlaying.item.duration}
+              position={nowPlaying.position}
+              paused={nowPlaying.paused}
+              isFullPage={config.fullmode}
+            />
+          </div>
+        ) : (
+          <div></div>
+        )}
+      </FancyBox>
     </div>
   );
 }

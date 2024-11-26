@@ -1,26 +1,33 @@
-import React, { useState } from 'react';
-import { Settings, X } from 'lucide-react';
+import React, { useState } from "react";
+import { Settings, X } from "lucide-react";
 
 interface ConfigMenuProps {
-  onSave: (apiUrl: string, apiKey: string) => void;
+  onSave: (apiUrl: string, apiKey: string, fullmode: boolean) => void;
   currentApiUrl: string;
   currentApiKey: string;
+  currentFullmode: boolean;
 }
 
-export function ConfigMenu({ onSave, currentApiUrl, currentApiKey }: ConfigMenuProps) {
+export function ConfigMenu({
+  onSave,
+  currentApiUrl,
+  currentApiKey,
+  currentFullmode,
+}: ConfigMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [apiUrl, setApiUrl] = useState(currentApiUrl);
   const [apiKey, setApiKey] = useState(currentApiKey);
+  const [fullmode, setFullmode] = useState(currentFullmode);
 
   const handleSave = () => {
-    onSave(apiUrl, apiKey);
+    onSave(apiUrl, apiKey, fullmode);
     setIsOpen(false);
   };
 
   const handleClear = () => {
-    setApiUrl('');
-    setApiKey('');
-    onSave('', '');
+    setApiUrl("");
+    setApiKey("");
+    onSave("", "", false);
     setIsOpen(false);
   };
 
@@ -42,17 +49,22 @@ export function ConfigMenu({ onSave, currentApiUrl, currentApiKey }: ConfigMenuP
             >
               <X className="w-5 h-5" />
             </button>
-            
+
             <h2 className="text-xl font-bold text-white mb-3">Configuration</h2>
 
             <div className="mb-1 -mr-2">
-            When eddyPlayer is served over HTTPS, connecting to a local eddyAPI instance may need a TLS proxy to work.
+              When eddyPlayer is served over HTTPS, connecting to a local
+              eddyAPI instance may need a TLS proxy to work.
             </div>
 
             <div className="mb-3 -mr-2">
-            You can use <a className="text-blue-400" href="https://try.cloudflare.com/">TryCloudflare</a> for this.
+              You can use{" "}
+              <a className="text-blue-400" href="https://try.cloudflare.com/">
+                TryCloudflare
+              </a>{" "}
+              for this.
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-white/70 mb-1">
@@ -66,10 +78,10 @@ export function ConfigMenu({ onSave, currentApiUrl, currentApiKey }: ConfigMenuP
                   placeholder="Enter API URL"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-white/70 mb-1">
-                  API Key
+                  API key
                 </label>
                 <input
                   type="password"
@@ -77,6 +89,23 @@ export function ConfigMenu({ onSave, currentApiUrl, currentApiKey }: ConfigMenuP
                   onChange={(e) => setApiKey(e.target.value)}
                   className="w-full px-3 py-2 bg-gray-800 rounded-lg text-white border border-white/10 focus:border-white/30 focus:outline-none"
                   placeholder="Enter API Key"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">
+                  Full page mode
+                </label>
+                <label className="block text-xs font-medium text-white/70 mb-1">
+                  Full page mode is meant for larger, widescreen screens. It
+                  will make the player take up the full height and width of the
+                  screen.
+                </label>
+                <input
+                  type="checkbox"
+                  checked={fullmode}
+                  onChange={(e) => setFullmode(e.target.checked)}
+                  className="w-4 h-4 text-white border border-white/10 focus:border-white/30 focus:outline-none"
                 />
               </div>
 
