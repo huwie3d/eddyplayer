@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useLyrics } from "../hooks/useLyrics";
 import { useSmoothTimer } from "../hooks/useSmoothTimer";
 import { JLF } from "../types/lyrics";
@@ -26,13 +26,13 @@ export default function getLyricStatus(
   currentTime = Number(currentTime.toFixed(3)) + offset;
 
   // Check if the lyric is active
-  let isActive = currentTime > lyricStart && currentTime < lyricEnd;
+  const isActive = currentTime > lyricStart && currentTime < lyricEnd;
   // Initialize variables for percentage and elapsed seconds
   let percentage = 0;
   let secondsAfterActive = 0;
 
   if (isActive) {
-    let duration = lyricEnd - lyricStart;
+    const duration = lyricEnd - lyricStart;
     secondsAfterActive = currentTime - lyricStart;
     percentage = (secondsAfterActive / duration) * 100;
   } else if (currentTime > lyricEnd) {
@@ -62,8 +62,6 @@ export function BasicLyrics({
   const [hasJustLoaded, setHasJustLoaded] = useState(false);
 
   useEffect(() => {
-    // is width > 1024px
-    let isMd = window.innerWidth > 1024;
     const timer = setTimeout(() => {
       if (activeLyricRef.current) {
         activeLyricRef.current.scrollIntoView({

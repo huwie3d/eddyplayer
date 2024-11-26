@@ -1,4 +1,3 @@
-import React from "react";
 import { useSmoothTimer } from "../hooks/useSmoothTimer";
 
 interface ProgressBarProps {

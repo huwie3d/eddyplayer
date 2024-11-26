@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, SetStateAction } from "react";
 
 interface UseSmoothTimerOptions {
   duration: number;
@@ -74,7 +74,7 @@ export const useSmoothTimer = ({
     if (onAttemptToUpdateInternalTime) onAttemptToUpdateInternalTime(internalTime);
   } , [internalTime, onAttemptToUpdateInternalTime]);
 
-  const throttledSetInternalTime = useThrottle((s) => {setInternalTime(s); updateTime();}, throttleBy);
+  const throttledSetInternalTime = useThrottle((s: SetStateAction<number>) => {setInternalTime(s); updateTime();}, throttleBy);
 
   const animate = useCallback((time: DOMHighResTimeStamp) => {
     // if we aren't playing, don't animate

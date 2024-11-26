@@ -5,6 +5,7 @@ interface ConfigMenuProps {
   onSave: (apiUrl: string, apiKey: string, fullmode: boolean) => void;
   currentApiUrl: string;
   currentApiKey: string;
+  currentFullmode: boolean;
 }
 
 export function ConfigMenu({

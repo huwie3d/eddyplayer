@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AlbumCover } from "./components/AlbumCover";
 import { TrackInfo } from "./components/TrackInfo";
 import { ProgressBar } from "./components/ProgressBar";
@@ -8,7 +8,7 @@ import { useConfig } from "./hooks/useConfig";
 import { useAlbumColors } from "./hooks/useAlbumColors";
 import MeshBg from "./components/MeshBg";
 import { LyricsToggle } from "./components/LyricsToggle";
-import { FancyBox } from "./components/fancyBox";
+import { FancyBox } from "./components/FancyBox";
 
 interface NowPlayingResponse {
   item: {
@@ -94,6 +94,7 @@ function App() {
             onSave={updateConfig}
             currentApiUrl={config.apiUrl}
             currentApiKey={config.apiKey}
+            currentFullmode={config.fullmode}
           />
         </div>
       </div>
@@ -108,6 +109,7 @@ function App() {
           onSave={updateConfig}
           currentApiUrl={config.apiUrl}
           currentApiKey={config.apiKey}
+          currentFullmode={config.fullmode}
         />
       </div>
     );
@@ -121,6 +123,7 @@ function App() {
         onSave={updateConfig}
         currentApiUrl={config.apiUrl}
         currentApiKey={config.apiKey}
+        currentFullmode={config.fullmode}
       />
 
       <LyricsToggle
