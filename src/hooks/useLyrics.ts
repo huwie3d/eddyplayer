@@ -126,28 +126,36 @@ export function useLyrics(
       setError(null);
 
       try {
-        // Try umi first
-        const umiLyrics = await fetchUMI(artistName, trackName);
-        console.log("Is richsync?", umiLyrics.richsync);
-        setLyrics(umiLyrics);
+        // Fetch from both sources concurrently
+        const [umiResult, lrcLibResult] = await Promise.allSettled([
+          fetchUMI(artistName, trackName),
+          fetchLRCLib(artistName, trackName, albumName, duration),
+        ]);
 
-        if (umiLyrics.richsync) return;
-        try {
-          const lrcLibLyrics = await fetchLRCLib(
-            artistName,
-            trackName,
-            albumName,
-            duration,
-          );
-          if (lrcLibLyrics && (lrcLibLyrics as JLF).lines?.lines?.length > 0) {
-            setLyrics(lrcLibLyrics);
-            return;
-          }
-        } catch (error) {
-          // If both sources fail, use whatever LRCLib returned (even if empty)
-          console.error("Failed to fetch from LRCLib and Umi:", error);
+        // Process UMI result
+        const umiLyrics = umiResult.status === 'fulfilled' ? umiResult.value : null;
+        
+        // Process LRCLib result
+        const lrcLibLyrics = lrcLibResult.status === 'fulfilled' ? lrcLibResult.value : null;
+
+        // Decide which lyrics to use
+        if (umiLyrics?.richsync) {
+          // If UMI has richsync, use it
           setLyrics(umiLyrics);
+        } else if (lrcLibLyrics && (lrcLibLyrics as JLF).lines?.lines?.length > 0) {
+          // If LRCLib has lyrics, use it
+          setLyrics(lrcLibLyrics);
+        } else if (umiLyrics) {
+          // Fallback to UMI if available
+          setLyrics(umiLyrics);
+        } else if (lrcLibLyrics) {
+          // Last resort: use LRCLib even if empty
+          setLyrics(lrcLibLyrics);
+        } else {
+          // No lyrics found from either source
+          throw new Error("No lyrics found");
         }
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch lyrics");
         setLyrics(null);
