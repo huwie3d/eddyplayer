@@ -81,6 +81,23 @@ async function fetchLRCLib(
   }
 }
 
+async function fetchWithTimeout(url: string, timeout = 750) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Request timed out');
+    }
+    throw error;
+  }
+}
+
 // Fetch lyrics from Umi
 // https://umi.bna.lut.li/lyrics?track=Favor&artist=Julien%20Baker&album=Little%20Oblivions
 async function fetchUMI(
@@ -94,7 +111,7 @@ async function fetchUMI(
     ...(albumName && { album: albumName }),
   });
 
-  const response = await fetch(`https://umi.bna.lut.li/lyrics?${params}`);
+  const response = await fetchWithTimeout(`https://umi.bna.lut.li/lyrics?${params}`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch lyrics from Umi");
