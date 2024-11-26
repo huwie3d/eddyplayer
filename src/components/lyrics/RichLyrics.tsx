@@ -14,6 +14,7 @@ export function RichLyrics({
   copyright: string | null;
   smt: TimerControls;
 }) {
+  const OFFSET = 0;
   const activeLyricRef = useRef<HTMLDivElement>(null);
 
   const rich = lyrics.richsync;
@@ -89,7 +90,7 @@ export function RichLyrics({
                     smt.currentTime,
                     line.timeStart,
                     line.timeEnd,
-                    0,
+                    -OFFSET
                   );
 
                   let currentLine = line.text;
@@ -101,7 +102,7 @@ export function RichLyrics({
                       smt.currentTime,
                       line.bgVox?.timeStart,
                       line.bgVox?.timeEnd,
-                      0,
+                      -OFFSET
                     );
 
                   return (
@@ -118,7 +119,7 @@ export function RichLyrics({
                     >
                       <div
                         ref={
-                          (segStatus.secondsBeforeActive < 0.5 &&
+                          (segStatus.secondsBeforeActive < 0.5 + OFFSET &&
                             segStatus.secondsBeforeActive > 0) ||
                           (segStatus.isActive && segStatus.percentage < 50)
                             ? activeLyricRef
@@ -131,6 +132,7 @@ export function RichLyrics({
                           smt.currentTime,
                           seg.timeStart,
                           seg.timeEnd,
+                          -OFFSET
                         );
 
                         // check if there is a space after the text
@@ -166,6 +168,7 @@ export function RichLyrics({
                               smt.currentTime,
                               seg.timeStart,
                               seg.timeEnd,
+                              -OFFSET
                             );
 
                             // check if there is a space after the text

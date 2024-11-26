@@ -66,7 +66,7 @@ function App() {
           setNowPlaying((prev) => prev && { ...prev, paused: true });
           setTimeout(() => {
             setNowPlaying((prev) => prev && { ...prev, paused: false });
-          }, 500);
+          }, 50);
         }
       } catch (error) {
         console.error("Failed to fetch now playing:", error);
